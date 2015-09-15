@@ -1,0 +1,28 @@
+{
+  "name": "foliage-engine",
+  "version": "1.0.0",
+  "homepage": "https://github.com/livioso/foliage-engine",
+  "authors": [
+    "Livio Bieri <livio.bieri@students.fhnw.ch>",
+    "Raphael Brunner <raphael.brunner3@students.fhnw.ch>"
+  ],
+  "moduleType": [
+    "es6",
+    "node"
+  ],
+  "private": true,
+  "dependencies": {
+    "angular-bootstrap": "~0.12.1",
+    "threejs": "*"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "resolutions": {
+    "angular": "1.3.17"
+  }
+}
