@@ -12,7 +12,10 @@
   ],
   "private": true,
   "dependencies": {
-    "threejs": "*"
+    "threejs": "*",
+    "threex.rendererstats": "https://github.com/jeromeetienne/threex.rendererstats/archive/master.zip",
+    "PointerLockControls": "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/js/controls/PointerLockControls.js",
+    "stats.js": "https://github.com/mrdoob/stats.js/archive/master.zip"
   },
   "ignore": [
     "**/.*",
