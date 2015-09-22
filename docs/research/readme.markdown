@@ -1,17 +1,8 @@
-////////////////////////////////////////////////////////////////////////////
-/////                                                                  /////
-///// Foliage Engine for three.js / read me                            /////
-/////                                                                  /////
-///// ---------------------------------------------------------------- /////
-/////                                                                  /////
-///// created by Andri Hadorn & Lukas Zimmermann                       /////
-///// University of Applied Sciences and Arts Northwestern Switzerland /////
-/////                                                                  /////
-///// August 14, 2015                                                  /////
-/////                                                                  /////
-///// ---------------------------------------------------------------- /////
-/////                                                                  /////
-///// Contains: license informations, credits, usage and examples      /////
+# Foliage Engine for three.js / read me created by Andri Hadorn & Lukas Zimmermann                       
+
+University of Applied Sciences and Arts Northwestern Switzerland August 14, 2015                                                 
+
+Contains: license informations, credits, usage and examples      /////
 /////                                                                  /////
 ////////////////////////////////////////////////////////////////////////////
 

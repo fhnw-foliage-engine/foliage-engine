@@ -136,15 +136,29 @@ THREE.Foliage.prototype.levelDefinition = [
 THREE.Foliage.prototype.models = [
     {
         level: 1,
-        models: ["models/grass/lod2/grass_0_single_grass_patch_lod2.js", "models/grass/lod2/grass_01_single_grass_patch_lod2.js", "models/grass/lod2/grass_03_single_grass_patch_lod2.js", "models/grass/lod2/grass_04_single_grass_patch_lod2.js"]
+        models: [
+          "../app/models/grass/lod2/grass_0_single_grass_patch_lod2.js",
+          "../app/models/grass/lod2/grass_01_single_grass_patch_lod2.js",
+          "../app/models/grass/lod2/grass_03_single_grass_patch_lod2.js",
+          "../app/models/grass/lod2/grass_04_single_grass_patch_lod2.js"
+        ]
     },
     {
         level: 2,
-        models: ["models/grass/lod3/grass_0_single_grass_patch_lod3.js", "models/grass/lod3/grass_01_single_grass_patch_lod3.js", "models/grass/lod3/grass_03_single_grass_patch_lod3.js", "models/grass/lod3/grass_04_single_grass_patch_lod3.js"]
+        models: [
+          "../app/models/grass/lod3/grass_0_single_grass_patch_lod3.js",
+          "../app/models/grass/lod3/grass_01_single_grass_patch_lod3.js",
+          "../app/models/grass/lod3/grass_03_single_grass_patch_lod3.js",
+          "../app/models/grass/lod3/grass_04_single_grass_patch_lod3.js"
+        ]
     },
     {
         level: 3,
-        models: ["models/grass/lod4/grass_0_single_grass_patch_lod4.js", "models/grass/lod4/grass_01_single_grass_patch_lod4.js", "models/grass/lod4/grass_03_single_grass_patch_lod4.js", "models/grass/lod4/grass_04_single_grass_patch_lod4.js"]
+        models: [
+          "../app/models/grass/lod4/grass_0_single_grass_patch_lod4.js",
+          "../app/models/grass/lod4/grass_01_single_grass_patch_lod4.js",
+          "../app/models/grass/lod4/grass_03_single_grass_patch_lod4.js",
+          "../app/models/grass/lod4/grass_04_single_grass_patch_lod4.js"]
     },
     {
         level: 4,
@@ -206,7 +220,6 @@ THREE.Foliage.prototype.update = function (camera, delta) {
     // calculates the distance between the current and the old camera position
     var deltaPos = 0;
     if (camera !== undefined) {
-        //OLD: deltaPos = Math.abs(this.oldCameraPos.x - camera.position.x) + Math.abs(this.oldCameraPos.y - camera.position.y) + Math.abs(this.oldCameraPos.z - camera.position.z);
 		// dist immer 0!
 		deltaPos = this.oldCameraPos.distanceTo(camera.getWorldPosition());
     }
