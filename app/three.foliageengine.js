@@ -1,3 +1,6 @@
+/*jslint node: true */
+'use strict';
+
 // Foliage Engine by Andri Hadorn & Lukas Zimmermann
 
 /**
@@ -15,11 +18,15 @@ THREE.Foliage = function () {
  *  otps can contain:
  *      width: width of the foliage object,
  *      depth: depth of the foliage object,
- *      callback: function which is called after the foliage is successfully created,
+ *      callback: function which is called after the
+ *      foliage is successfully created,
  *      models: an arrax for each LOD level with all models for this level,
  *      createTerrain: a function which creates a plane or a terrain,
- *      calculateHeight: a function which gets the height (y axis) for a foiage object on a point (x, z)
- *      createPositions: a function which generates an array for each LOD level with multiple positions. Each position has an x, y value and a meshIdx, which mesh should be displayed
+ *      calculateHeight: a function which gets the height (y axis) for a
+ *      foilage object on a point (x, z)
+ *      createPositions: a function which generates an array for each
+ *      LOD level with multiple positions. Each position has
+ *      an x, y value and a meshIdx, which mesh should be displayed
  *
  * @param opts
  *
@@ -39,15 +46,21 @@ THREE.Foliage = function (opts) {
     this.depth = opts.depth !== undefined ? opts.depth : this.depth;
     this.callback = opts.callback !== undefined ? opts.callback : this.callback;
     this.models = opts.models !== undefined ? opts.models : this.models;
-    this.levelDefinition = opts.levelDefinition !== undefined ? opts.levelDefinition : this.levelDefinition;
-    this.createTerrain = opts.createTerrain !== undefined ? opts.createTerrain : this.createTerrain;
-    this.calculateHeight = opts.calculateHeight !== undefined ? opts.calculateHeight : this.calculateDefaultHeight;
-    this.createPositions = opts.createPositions !== undefined ? opts.createPositions : this.createPositions;
+    this.levelDefinition = opts.levelDefinition !==
+      undefined ? opts.levelDefinition : this.levelDefinition;
+
+    this.createTerrain = opts.createTerrain !==
+      undefined ? opts.createTerrain : this.createTerrain;
+
+    this.calculateHeight = opts.calculateHeight !==
+      undefined ? opts.calculateHeight : this.calculateDefaultHeight;
+
+    this.createPositions = opts.createPositions !==
+      undefined ? opts.createPositions : this.createPositions;
 
     for (var i = 0; i < this.models.length; i++) {
         var level = this.models[i].level;
         var models = this.models[i].models;
-        var materials = this.models[i].materials;
         var textures = this.models[i].textures;
 
         this.lodTemplates.push(null);
@@ -61,9 +74,9 @@ THREE.Foliage = function (opts) {
 
         if (textures) {
             textures = textures();
-            for (var j = 0; j < textures.length; j++) {
+            for (var x = 0; x < textures.length; x++) {
                 this.totalModels++;
-                this.handle2DLevel(textures[j], j, level);
+                this.handle2DLevel(textures[x], x, level);
             }
         }
     }
@@ -130,42 +143,44 @@ THREE.Foliage.prototype.levelDefinition = [
 ];
 
 /**
- * Array of LOD level definitions, each definition contains the level number and an array of models or textures
+ * Array of LOD level definitions, each definition
+ * contains the level number and an array of models or textures
  * @type {Array}
  */
 THREE.Foliage.prototype.models = [
     {
         level: 1,
         models: [
-          "../app/models/grass/lod2/grass_0_single_grass_patch_lod2.js",
-          "../app/models/grass/lod2/grass_01_single_grass_patch_lod2.js",
-          "../app/models/grass/lod2/grass_03_single_grass_patch_lod2.js",
-          "../app/models/grass/lod2/grass_04_single_grass_patch_lod2.js"
+          '../app/models/grass/lod2/grass_0_single_grass_patch_lod2.js',
+          '../app/models/grass/lod2/grass_01_single_grass_patch_lod2.js',
+          '../app/models/grass/lod2/grass_03_single_grass_patch_lod2.js',
+          '../app/models/grass/lod2/grass_04_single_grass_patch_lod2.js'
         ]
     },
     {
         level: 2,
         models: [
-          "../app/models/grass/lod3/grass_0_single_grass_patch_lod3.js",
-          "../app/models/grass/lod3/grass_01_single_grass_patch_lod3.js",
-          "../app/models/grass/lod3/grass_03_single_grass_patch_lod3.js",
-          "../app/models/grass/lod3/grass_04_single_grass_patch_lod3.js"
+          '../app/models/grass/lod3/grass_0_single_grass_patch_lod3.js',
+          '../app/models/grass/lod3/grass_01_single_grass_patch_lod3.js',
+          '../app/models/grass/lod3/grass_03_single_grass_patch_lod3.js',
+          '../app/models/grass/lod3/grass_04_single_grass_patch_lod3.js'
         ]
     },
     {
         level: 3,
         models: [
-          "../app/models/grass/lod4/grass_0_single_grass_patch_lod4.js",
-          "../app/models/grass/lod4/grass_01_single_grass_patch_lod4.js",
-          "../app/models/grass/lod4/grass_03_single_grass_patch_lod4.js",
-          "../app/models/grass/lod4/grass_04_single_grass_patch_lod4.js"]
+          '../app/models/grass/lod4/grass_0_single_grass_patch_lod4.js',
+          '../app/models/grass/lod4/grass_01_single_grass_patch_lod4.js',
+          '../app/models/grass/lod4/grass_03_single_grass_patch_lod4.js',
+          '../app/models/grass/lod4/grass_04_single_grass_patch_lod4.js']
     },
     {
         level: 4,
         textures: (function() {
             // create the textureDiffuse
-            var textureDiffuseUrl = "textures/lod2d.png";
-            var textureDiffuse = THREE.ImageUtils.loadTexture(textureDiffuseUrl);
+            var textureDiffuseUrl = 'textures/lod2d.png';
+            var textureDiffuse =
+              THREE.ImageUtils.loadTexture(textureDiffuseUrl);
             textureDiffuse.wrapS = THREE.RepeatWrapping;
             textureDiffuse.wrapT = THREE.RepeatWrapping;
             textureDiffuse.repeat.x = 1;
@@ -173,7 +188,7 @@ THREE.Foliage.prototype.models = [
             textureDiffuse.anisotropy = 16;
 
             // create the textureNormal
-            var textureNormalUrl = "textures/lod2d_normal.png";
+            var textureNormalUrl = 'textures/lod2d_normal.png';
             var textureNormal = THREE.ImageUtils.loadTexture(textureNormalUrl);
             textureNormal.wrapS = THREE.RepeatWrapping;
             textureNormal.wrapT = THREE.RepeatWrapping;
@@ -215,7 +230,7 @@ THREE.Foliage.prototype.callback = function () {
  * @param {THREE.Camera} camera camera for calculating the distance
  * @param {number} delta delta time since the last call
  */
-THREE.Foliage.prototype.update = function (camera, delta) {
+THREE.Foliage.prototype.update = function (camera, delta) { // jshint ignore:line
 
     // calculates the distance between the current and the old camera position
     var deltaPos = 0;
@@ -231,7 +246,7 @@ THREE.Foliage.prototype.update = function (camera, delta) {
         for (var i = 0; i < this.lodObjects.length; i++) {
             var object = this.lodObjects[i];
             if (object instanceof THREE.LOD) {
-                object.update(camera);
+              //object.update(camera);
             }
         }
 
@@ -306,7 +321,8 @@ THREE.Foliage.prototype.calculateDefaultHeight = function (x, z) {
  * Callback function for the JSON Loader.
  * @param {number} level level of the mesh
  * @param {number} meshIdx mesh Index of the mesh
- * @returns {Function} callback function which is called when the JSON loader loaded the mesh
+ * @returns {Function} callback function which
+ * is called when the JSON loader loaded the mesh
  */
 THREE.Foliage.prototype.modelLoaded = function (level, meshIdx) {
     var foliage = this;
@@ -318,7 +334,10 @@ THREE.Foliage.prototype.modelLoaded = function (level, meshIdx) {
 
 
         // Register new loaded LOD Level
-        var mesh = new THREE.Mesh(new THREE.BufferGeometry().fromGeometry(geometry), new THREE.MeshFaceMaterial(material));
+        var mesh = new THREE.Mesh(
+          new THREE.BufferGeometry().fromGeometry(geometry),
+          new THREE.MeshFaceMaterial(material));
+
         mesh.scale.x = 0.5;
         mesh.scale.y = 0.5;
         mesh.scale.z = 0.5;
@@ -327,7 +346,8 @@ THREE.Foliage.prototype.modelLoaded = function (level, meshIdx) {
         if (foliage.lodTemplates[level - 1] !== null) {
             foliage.lodTemplates[level - 1].addMesh(meshIdx, mesh);
         } else {
-            foliage.lodTemplates[level - 1] = new THREE.Foliage.LodTemplate(meshIdx, mesh, level, "3d");
+          foliage.lodTemplates[level - 1] =
+            new THREE.Foliage.LodTemplate(meshIdx, mesh, level, '3d');
         }
         foliage.modelsLoaded++;
 
@@ -336,12 +356,12 @@ THREE.Foliage.prototype.modelLoaded = function (level, meshIdx) {
 };
 
 /**
- * "plants" the foliage on the underground if all models are loaded.
+ * 'plants' the foliage on the underground if all models are loaded.
  */
 THREE.Foliage.prototype.createFoliage = function () {
 
     // All levels loaded?
-    if (this.modelsLoaded == this.totalModels) {
+    if (this.modelsLoaded === this.totalModels) {
 
         // Create terrain
         var terrain = this.createTerrain(this.width, this.depth);
@@ -350,7 +370,8 @@ THREE.Foliage.prototype.createFoliage = function () {
         }
 
         // Create and sort the positions
-        var lodObjectSize = 5; // Each LOD object represends a lodObjectSize * lodObjectSize area
+        // Each LOD object represends a lodObjectSize * lodObjectSize area
+        var lodObjectSize = 5;
         var positions = [];
 
         var unsortedPositions = this.createPositions();
@@ -365,7 +386,8 @@ THREE.Foliage.prototype.createFoliage = function () {
 
             for (var i = 0; i < p.length; i++) {
 
-                if (positions[j][Math.floor(p[i].x / lodObjectSize)] === undefined || positions[j][Math.floor(p[i].x / lodObjectSize)] === null) {
+              if (positions[j][Math.floor(p[i].x / lodObjectSize)] === undefined ||
+                  positions[j][Math.floor(p[i].x / lodObjectSize)] === null) {
                     positions[j][Math.floor(p[i].x / lodObjectSize)] = [];
                 }
                 if (positions[j][Math.floor(p[i].x / lodObjectSize)][Math.floor(p[i].y / lodObjectSize)] === undefined || positions[j][Math.floor(p[i].x / lodObjectSize)][Math.floor(p[i].y / lodObjectSize)] === null) {
@@ -374,9 +396,8 @@ THREE.Foliage.prototype.createFoliage = function () {
                 positions[j][Math.floor(p[i].x / lodObjectSize)][Math.floor(p[i].y / lodObjectSize)].push(p[i]);
             }
         }
-        var lodObjects = [];
 
-        // "plants" the foliage meshes at the given points
+        // 'plants' the foliage meshes at the given points
         for (var x = 0; x < this.width; x += lodObjectSize) {
             for (var y = 0; y < this.depth; y += lodObjectSize) {
                 var lod = this.createLOD();
@@ -400,9 +421,10 @@ THREE.Foliage.prototype.createFoliage = function () {
                     var mergedMesh;
 
                     // Creates the 2d plane
-                    if (this.lodTemplates[lodLevel].mode == "2d") {
-                        var mesh = this.lodTemplates[lodLevel].meshes[0].clone(); //only one 2d mesh is supported
-                        mesh.scale.x = 1;
+                    if (this.lodTemplates[lodLevel].mode === '2d') {
+                        //only one 2d mesh is supported
+                      var mesh = this.lodTemplates[lodLevel].meshes[0].clone();
+                      mesh.scale.x = 1;
                         mesh.scale.y = 1;
 
                         mesh.castShadow = true;
@@ -410,13 +432,18 @@ THREE.Foliage.prototype.createFoliage = function () {
                         mergedMesh = mesh;
 
                         if (terrain !== undefined) {
-                            mesh.position.y += this.calculateHeight(lod.position.x, lod.position.z) + 0.1;
+                          mesh.position.y +=
+                            this.calculateHeight(
+                              lod.position.x, lod.position.z) + 0.1;
                         }
                         mesh.position.x += 2.5;
                         mesh.position.z += 2.5;
 
                         // Creates the 3d models
-                    } else if (positions[lodLevel] !== undefined && positions[lodLevel][xIdx] !== undefined && positions[lodLevel][xIdx][yIdx] !== undefined && positions[lodLevel][xIdx][yIdx] !== null) {
+                    } else if (positions[lodLevel] !== undefined &&
+                               positions[lodLevel][xIdx] !== undefined &&
+                              positions[lodLevel][xIdx][yIdx] !== undefined &&
+                                positions[lodLevel][xIdx][yIdx] !== null) {
                         mergedMesh = new THREE.Object3D();
 
                         var posArray = positions[lodLevel][xIdx][yIdx];
@@ -491,7 +518,7 @@ THREE.Foliage.prototype.createPositions = function () {
     var positions = [];
 
     for (var lodLevel = 0; lodLevel < this.lodTemplates.length; lodLevel++) {
-        if (this.lodTemplates[lodLevel] === null || this.lodTemplates[lodLevel].meshes.length < 1 || this.lodTemplates[lodLevel].mode == "2d") {
+        if (this.lodTemplates[lodLevel] === null || this.lodTemplates[lodLevel].meshes.length < 1 || this.lodTemplates[lodLevel].mode === '2d') {
             break;
         }
         positions[lodLevel] = [];
@@ -502,7 +529,7 @@ THREE.Foliage.prototype.createPositions = function () {
             var meshIdx = Number.MAX_VALUE;
 
             for (var lodLevel = 0; lodLevel < this.lodTemplates.length; lodLevel++) {
-                if (this.lodTemplates[lodLevel] === null || this.lodTemplates[lodLevel].meshes.length < 1 || this.lodTemplates[lodLevel].mode == "2d") {
+                if (this.lodTemplates[lodLevel] === null || this.lodTemplates[lodLevel].meshes.length < 1 || this.lodTemplates[lodLevel].mode === '2d') {
                     break;
                 }
 
@@ -543,9 +570,10 @@ THREE.Foliage.prototype.handle2DLevel = function (texture, textureIdx, level) {
     object3D.rotateX(-Math.PI / 2);
 
     if (this.lodTemplates[level - 1] !== null) {
-        this.lodTemplates[level - 1].addMesh(textureIdx, object3D);
+      this.lodTemplates[level - 1].addMesh(textureIdx, object3D);
     } else {
-        this.lodTemplates[level - 1] = new THREE.Foliage.LodTemplate(textureIdx, object3D, level, "2d");
+      this.lodTemplates[level - 1] = 
+        new THREE.Foliage.LodTemplate(textureIdx, object3D, level, '2d');
     }
     this.modelsLoaded++;
     this.createFoliage();
@@ -556,7 +584,7 @@ THREE.Foliage.prototype.handle2DLevel = function (texture, textureIdx, level) {
  * @param {number} meshIdx mesh index
  * @param {THREE.Mesh} mesh THREE.Mesh
  * @param {number} level LOD level index
- * @param {string} mode String "3d" or "2d"
+ * @param {string} mode String '3d' or '2d'
  * @constructor
  */
 THREE.Foliage.LodTemplate = function (meshIdx, mesh, level, mode) {
