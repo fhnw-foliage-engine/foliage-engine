@@ -235,6 +235,7 @@ THREE.Foliage.prototype.update = function (camera, delta) { // jshint ignore:lin
     for (var i = 0; i < this.lodObjects.length; i++) {
       var object = this.lodObjects[i];
       if (object instanceof THREE.LOD) {
+        object.update(camera);
       }
     }
     // update successfully done
