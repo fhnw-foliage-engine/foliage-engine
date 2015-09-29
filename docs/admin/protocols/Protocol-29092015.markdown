@@ -6,16 +6,16 @@
 
 ### Protokollpunkte / Themen
 - Besprechung der erledigten Arbeiten seit letzten Meeting.
-- Erläuterungen der drei Teilaspekte des Projekts 
+- Erläuterungen der drei Teilaspekte des Projekts durch Auftraggeber
   1. Billboard Implementation
   2. Optimierung mittels Octree Implementation
   3. Dynamic Scene Graph Implementation) durch Auftraggeber.
 
 ### Pendenzenliste / Beschlüsse
-- Ausarbeiten einer kurzen Beschreibung der drei möglichen Teilaufgaben des Projekts bis 7. Oktober durch Projektteam.
-- Ausarbeiten einer kurzen Planung der wichtigsten Milestones (TDB vor dem 7. Oktober, via Mail) durch Projektteam.
-- Bewertungsbogen ausarbeiten bis 7. Oktober durch Arizona/Bolzern.
-- Nächstes Meeting Mittwoch 7. October 11:00.
+- Bis zum nächsten Meeting am 7. Oktober sind die folgenden Pendenzen zu erledigen:
+  1. Ausarbeiten einer kurzen Beschreibung der drei möglichen Teilaufgaben des Projekts **durch Projektteam.**
+  2. Ausarbeiten einer kurzen Planung der wichtigsten Milestones (TDB vor dem 7. Oktober, via Mail) **durch Projektteam.**
+  3. Bewertungsbogen ausarbeiten **durch Arizona/Bolzern.**
 
 
 
