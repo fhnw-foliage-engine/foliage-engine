@@ -9,7 +9,7 @@
 - Erläuterungen der drei Teilaspekte des Projekts durch Auftraggeber
   1. Billboard Implementation
   2. Optimierung mittels Octree Implementation
-  3. Dynamic Scene Graph Implementation) durch Auftraggeber.
+  3. Dynamic Scene Graph Implementation durch Auftraggeber.
 
 ### Pendenzenliste / Beschlüsse
 - Bis zum nächsten Meeting am 7. Oktober sind die folgenden Pendenzen zu erledigen:
