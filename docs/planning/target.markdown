@@ -2,9 +2,10 @@
 
 ###1. Billboard
 #####Ausgangslage
-Zur Zeit werden im der Foliage-engine bis auf die letzte loD-Komponente mit Gras-Objekten dargestellt, die jedoch einfach ein paar Vertices weniger enthalten. Lediglich die letzte loD-Stufe beinhaltet nur eine Textur
+Zur Zeit hat die Foliage-engine 4 verschiedene loD. LoD1 bis LOD3 sind Objekte mit jedoch jeweils entsprechend reduzierter Vertices. Lod4 ist eine Textur
 #####Auftrag 
-Unser Auftrag ist es nun eine weitere Komponente durch eine Billboarddarstellung zu ersetzen, um so die Performance der Foliage-engine zu steigern.
+Unser Auftrag ist es nun loD3 durch eine Billboarddarstellung zu ersetzen, um so die Performance der Foliage-engine zu steigern.
+Dazu sollen wir einen eigenen Shader implementieren
 ###2. Octree
 #####Ausgangslage
 Bei der aktuellen Foliage-engine wurde mit Octree eine Performancesteigerung versucht, jedoch wurden nur minimale verbesserung erzielt.
