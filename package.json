@@ -14,8 +14,12 @@
   "devDependencies": {
     "bower": "^1.5.2",
     "eslint": "^1.4.1",
+    "gulp-jscs": "^3.0.1",
+    "gulp-jshint": "^1.11.2",
     "jscs": "^2.1.1",
-    "pre-commit": "^1.0.5"
+    "jshint-stylish": "^2.0.1",
+    "pre-commit": "^1.0.5",
+    "run-sequence": "^1.1.4"
   },
   "scripts": {
     "start": "node server.js",
