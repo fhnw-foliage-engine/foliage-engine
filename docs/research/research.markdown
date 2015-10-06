@@ -9,8 +9,7 @@
 - http://threejs.org/docs/#Reference/Core/Object3D
 - http://grass.andri-h.ch/docs/index.html
 - http://grass.andri-h.ch/scenes/demo.html
-by Livio
-I
+- [SO: Custom Texture Shader](http://stackoverflow.com/questions/12627422/custom-texture-shader-in-three-js)
 
 ### Rahmen abstecken
 - Grass Materiales in ThreeJS.
