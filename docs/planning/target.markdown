@@ -15,4 +15,4 @@ Unser Auftrag ist es nun weiter die Implementation von Octree zu untersuchen, um
 #####Ausgangslage
 Im jetztigen Zeitpunkt ist das example der Foliage-engine lediglich eine begrenzte Fläche die man sehen und sich darauf bewegen kann.
 #####Auftrag
-Unser Aufgrag ist es nun eine dynamische, unendliche Fläche zu erzeugen bei der man einen besseren Eindruck über die Leistung der Engine erhalten kann.
+Unser Aufgrag ist es nun eine dynamische, unendliche Fläche zu erzeugen bei der man einen besseren Eindruck über die Leistung der Engine erhalten kann. Egal in welche Richtung und wie lange man sich bewegt, es soll immer das volle Sichtfeld mit Gras voll sein.
