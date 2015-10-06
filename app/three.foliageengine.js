@@ -61,10 +61,11 @@ THREE.Foliage = function (opts) {
       }
     }
     if (textures) {
-      textures = textures();
-      for (var x = 0; x < textures.length; x++) {
+      var modelTextur = (textures())();
+      //var modelTextur = textures();
+      for (var x = 0; x < modelTextur.length; x++) {
         this.totalModels++;
-        this.handle2DLevel(textures[x], x, level);
+        this.handle2DLevel(modelTextur[x], x, level);
       }
     }
   }
@@ -128,10 +129,11 @@ THREE.Foliage.prototype.forceUpdate = false;
  */
 
 THREE.Foliage.prototype.levelDefinition = [
-  1,
+  /*1,
   7.5,
   20,
-  50
+  50*/
+  1,4,9,15
 ];
 
 /**
@@ -310,9 +312,25 @@ THREE.Foliage.prototype.modelLoaded = function (level, meshIdx) {
       materialDoubleSided.side = THREE.DoubleSide;
     }
     // Register new loaded LOD Level
-    var mesh = new THREE.Mesh(
+    var mesh;
+    if(level == 1){
+      mesh = new THREE.Mesh(
       new THREE.BufferGeometry().fromGeometry(geometry),
-      new THREE.MeshFaceMaterial(material));
+      //new THREE.MeshFaceMaterial(material));
+      new THREE.MeshBasicMaterial({color : 0xff0000}));
+    } else if(level == 2){
+      mesh = new THREE.Mesh(
+      new THREE.BufferGeometry().fromGeometry(geometry),
+      new THREE.MeshBasicMaterial({color : 0x0000ff}));
+    } else if(level == 3){
+      mesh = new THREE.Mesh(
+      new THREE.BufferGeometry().fromGeometry(geometry),
+      new THREE.MeshBasicMaterial({color : 0x00ff00}));
+    } else {
+      mesh = new THREE.Mesh(
+      new THREE.BufferGeometry().fromGeometry(geometry),
+      new THREE.MeshBasicMaterial({color : 0x000000}));
+    }
 
     mesh.scale.x = 0.5;
     mesh.scale.y = 0.5;
@@ -503,6 +521,7 @@ THREE.Foliage.prototype.createPositions = function () {
  * @param {number} level LOD level index
  */
 THREE.Foliage.prototype.handle3DLevel = function (modelURL, modelIdx, level) {
+  console.log(level)
   if (!this.loader) {
     this.loader = new THREE.JSONLoader();
   }
@@ -516,8 +535,10 @@ THREE.Foliage.prototype.handle3DLevel = function (modelURL, modelIdx, level) {
  * @param {number} level LOD level index
  */
 THREE.Foliage.prototype.handle2DLevel = function (texture, textureIdx, level) {
-  var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), texture);
-  object3D.rotateX(-Math.PI / 2);
+  //var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), texture);
+  console.log(level);
+  var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), new THREE.MeshBasicMaterial({ color : 0xff0000}));
+  object3D.rotateZ(-Math.PI / 2);
   if (this.lodTemplates[level - 1] !== null) {
     this.lodTemplates[level - 1].addMesh(textureIdx, object3D);
   } else {
