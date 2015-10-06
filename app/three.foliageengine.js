@@ -61,7 +61,7 @@ THREE.Foliage = function (opts) {
       }
     }
     if (textures) {
-      textures = textures();
+      textures = (textures())();
       for (var x = 0; x < textures.length; x++) {
         this.totalModels++;
         this.handle2DLevel(textures[x], x, level);
