@@ -536,9 +536,27 @@ THREE.Foliage.prototype.handle3DLevel = function (modelURL, modelIdx, level) {
  */
 THREE.Foliage.prototype.handle2DLevel = function (texture, textureIdx, level) {
   //var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), texture);
-  console.log(level);
-  var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), new THREE.MeshBasicMaterial({ color : 0xff0000}));
-  object3D.rotateZ(-Math.PI / 2);
+  var vertexShader = [
+    "varying vec2 vUv;",
+    "void main() {",
+      "vUv = uv;",
+      "gl_Position = projectionMatrix * (modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)",
+        "+ vec4(position.x, position.y, 0.0, 0.0));",
+    "}"
+      ].join("\n");
+  var fragmentShader = [
+    "varying vec2 vUv;",
+    "void main() {",
+    "gl_FragColor = vec4( 1.0, 0.0, 0.0,0.5 );",
+    "}"].join("\n");
+
+  var material = new THREE.ShaderMaterial( {
+          vertexShader: vertexShader,
+          fragmentShader: fragmentShader
+        });
+  //var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), new THREE.MeshBasicMaterial({ color : 0xff0000}));
+  var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), material);
+  //object3D.rotateZ(-Math.PI / 2);
   if (this.lodTemplates[level - 1] !== null) {
     this.lodTemplates[level - 1].addMesh(textureIdx, object3D);
   } else {
