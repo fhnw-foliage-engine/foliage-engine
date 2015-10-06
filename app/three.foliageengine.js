@@ -536,6 +536,8 @@ THREE.Foliage.prototype.handle3DLevel = function (modelURL, modelIdx, level) {
  */
 THREE.Foliage.prototype.handle2DLevel = function (texture, textureIdx, level) {
   //var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), texture);
+  //Billboard implementation
+  var texture = THREE.ImageUtils.loadTexture( 'textures/grass.png' );
   var vertexShader = [
     "varying vec2 vUv;",
     "void main() {",
@@ -545,15 +547,21 @@ THREE.Foliage.prototype.handle2DLevel = function (texture, textureIdx, level) {
     "}"
       ].join("\n");
   var fragmentShader = [
+    "uniform sampler2D texture;",
     "varying vec2 vUv;",
     "void main() {",
-    "gl_FragColor = vec4( 1.0, 0.0, 0.0,0.5 );",
+    "vec4 tex = texture2D ( texture, vUv);",
+    "gl_FragColor = vec4(tex.r, tex.g, tex.b, tex.a);",
     "}"].join("\n");
 
   var material = new THREE.ShaderMaterial( {
+          uniforms: {
+              texture: { type: "t", value: texture }
+          },
           vertexShader: vertexShader,
           fragmentShader: fragmentShader
         });
+  //Billboard implementation ende
   //var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), new THREE.MeshBasicMaterial({ color : 0xff0000}));
   var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), material);
   //object3D.rotateZ(-Math.PI / 2);
