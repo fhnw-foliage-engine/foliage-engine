@@ -53,23 +53,31 @@
 
         scene = new THREE.Scene();
 
+        var vertices = [new THREE.Vector3(0,0,0)];
 
-        var geometry = new THREE.BufferGeometry();
-        var geometry.dynamic = false;
+        var geometry = new THREE.Geometry();
+        geometry.dynamic = false;
+        geometry.vertices = vertices;
 
         var texture = THREE.ImageUtils.loadTexture( 'textures/grass.png' );
+
+        var material = new THREE.PointsMaterial();
+        material.map = texture;
+        material.size = 500.0;
+        material.sizeAuttenuation = false;
+        material.transparent = true;
         // var material = new THREE.MeshBasicMaterial( {map: texture, side: THREE.DoubleSide} );
 
-        var material = new THREE.ShaderMaterial( {
+        /*var material = new THREE.ShaderMaterial( {
           uniforms: {
               texture: { type: "t", value: texture },
           },
           vertexShader: document.getElementById( 'grassvertexshader' ).textContent,
           fragmentShader: document.getElementById( 'grassfragmentshader' ).textContent,
           transparent:true
-        });
+        });*/
 
-        plane = new THREE.ParticleSystem( geometry, material );
+        plane = new THREE.Points( geometry, material );
         scene.add( plane );
 
         renderer = new THREE.WebGLRenderer();

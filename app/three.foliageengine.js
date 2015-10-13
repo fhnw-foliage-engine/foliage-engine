@@ -538,7 +538,7 @@ THREE.Foliage.prototype.handle2DLevel = function (texture, textureIdx, level) {
   //var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), texture);
   //Billboard implementation
   var texture = THREE.ImageUtils.loadTexture( 'textures/grass.png' );
-  var vertexShader = [
+  /*var vertexShader = [
     "varying vec2 vUv;",
     "void main() {",
       "vUv = uv;",
@@ -560,11 +560,24 @@ THREE.Foliage.prototype.handle2DLevel = function (texture, textureIdx, level) {
           },
           vertexShader: vertexShader,
           fragmentShader: fragmentShader,
-          transparent:true
-        });
+          transparent:true,
+        });*/
+
+  var vertices = [new THREE.Vector3(0,0,0),new THREE.Vector3(5,0,0),new THREE.Vector3(5,5,0),new THREE.Vector3(0,5,0),];
+
+  var geometry = new THREE.Geometry();
+  geometry.dynamic = false;
+  geometry.vertices = vertices;
+
+  var material = new THREE.PointsMaterial();
+  material.map = texture;
+  material.size = 5.0;
+  material.sizeAuttenuation = false;
+  material.transparent = false;
+
   //Billboard implementation ende
   //var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), new THREE.MeshBasicMaterial({ color : 0xff0000}));
-  var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), material);
+  var object3D = new THREE.Points(geometry, material);
   //object3D.rotateZ(-Math.PI / 2);
   if (this.lodTemplates[level - 1] !== null) {
     this.lodTemplates[level - 1].addMesh(textureIdx, object3D);
