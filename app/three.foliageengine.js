@@ -559,7 +559,8 @@ THREE.Foliage.prototype.handle2DLevel = function (texture, textureIdx, level) {
               texture: { type: "t", value: texture }
           },
           vertexShader: vertexShader,
-          fragmentShader: fragmentShader
+          fragmentShader: fragmentShader,
+          transparent:true
         });
   //Billboard implementation ende
   //var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), new THREE.MeshBasicMaterial({ color : 0xff0000}));
