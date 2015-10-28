@@ -12,6 +12,8 @@ THREE.Foliage = function () {
   new THREE.Foliage({});
 };
 
+//test variable
+var texture;
 /**
  *  Creates a new foliage object
  *
@@ -35,6 +37,7 @@ THREE.Foliage = function (opts) {
   if (!(this instanceof THREE.Foliage)) {
     return new THREE.Foliage(name);
   }
+  texture = THREE.ImageUtils.loadTexture( 'textures/grass.png' );
   THREE.Object3D.call(this);
   // handle default arguments
   opts = opts || {};
@@ -133,7 +136,7 @@ THREE.Foliage.prototype.levelDefinition = [
   7.5,
   20,
   50*/
-  1,4,9,15
+  1,7.5,20,50
 ];
 
 /**
@@ -313,24 +316,27 @@ THREE.Foliage.prototype.modelLoaded = function (level, meshIdx) {
     }
     // Register new loaded LOD Level
     var mesh;
-    if(level == 1){
+    /*(level == 1){
       mesh = new THREE.Mesh(
       new THREE.BufferGeometry().fromGeometry(geometry),
-      //new THREE.MeshFaceMaterial(material));
-      new THREE.MeshBasicMaterial({color : 0xff0000}));
-    } else if(level == 2){
+      new THREE.MeshFaceMaterial(material));
+      //new THREE.MeshBasicMaterial({color : 0xff0000}));
+    } /*else if(level == 2){
       mesh = new THREE.Mesh(
       new THREE.BufferGeometry().fromGeometry(geometry),
       new THREE.MeshBasicMaterial({color : 0x0000ff}));
-    } else if(level == 3){
+    } /*else if(level == 3){
       mesh = new THREE.Mesh(
       new THREE.BufferGeometry().fromGeometry(geometry),
       new THREE.MeshBasicMaterial({color : 0x00ff00}));
     } else {
       mesh = new THREE.Mesh(
       new THREE.BufferGeometry().fromGeometry(geometry),
-      new THREE.MeshBasicMaterial({color : 0x000000}));
-    }
+      new THREE.MeshBasicMaterial({color : 0x00ff00}));
+    } */ //nicht benötigt?
+    //else {
+      mesh = billboard(texture);
+    //}
 
     mesh.scale.x = 0.5;
     mesh.scale.y = 0.5;
@@ -359,7 +365,7 @@ THREE.Foliage.prototype.createFoliage = function () {
     }
     // Create and sort the positions
     // Each LOD object represends a lodObjectSize * lodObjectSize area
-    var lodObjectSize = 5;
+    var lodObjectSize = 1;
     var positions = [];
     var unsortedPositions = this.createPositions();
     if (unsortedPositions === undefined || unsortedPositions === null) {
@@ -367,12 +373,14 @@ THREE.Foliage.prototype.createFoliage = function () {
     }
     for (var j = 0; j < unsortedPositions.length; j++) {
       positions[j] = [];
+      console.log("lod: " + j);
       var p = unsortedPositions[j];
       for (var i = 0; i < p.length; i++) {
         if (
           positions[j][Math.floor(p[i].x / lodObjectSize)] === undefined ||
           positions[j][Math.floor(p[i].x / lodObjectSize)] === null) {
           positions[j][Math.floor(p[i].x / lodObjectSize)] = [];
+          console.log("second: " + (Math.floor(p[i].x / lodObjectSize)));
         }
         if (
           positions[j][Math.floor(p[i].x / lodObjectSize)]
@@ -412,10 +420,10 @@ THREE.Foliage.prototype.createFoliage = function () {
             mesh.castShadow = true;
             mergedMesh = mesh;
             if (terrain !== undefined) {
-              mesh.position.y += this.calculateHeight(lod.position.x, lod.position.z) + 0.1;
+              mesh.position.y += this.calculateHeight(lod.position.x, lod.position.z) + 0.3;
             }
-            mesh.position.x += 2.5;
-            mesh.position.z += 2.5;  // Creates the 3d models
+            mesh.position.x += 0;
+            mesh.position.z += 0;  // Creates the 3d models
           } else if (positions[lodLevel] !== undefined &&
                      positions[lodLevel][xIdx] !== undefined &&
                      positions[lodLevel][xIdx][yIdx] !== undefined &&
@@ -449,7 +457,7 @@ THREE.Foliage.prototype.createFoliage = function () {
               if (terrain !== undefined) {
                 mesh.position.y +=
                   this.calculateHeight(lod.position.x + mesh.position.x,
-                                       lod.position.z + mesh.position.z);
+                                       lod.position.z + mesh.position.z) + 0.3;
               }
               mesh.castShadow = true;
               mergedMesh.add(mesh);
@@ -563,7 +571,7 @@ THREE.Foliage.prototype.handle2DLevel = function (texture, textureIdx, level) {
           transparent:true,
         });*/
 
-  var vertices = [new THREE.Vector3(0,0,0),new THREE.Vector3(5,0,0),new THREE.Vector3(5,5,0),new THREE.Vector3(0,5,0),];
+  var vertices = [new THREE.Vector3(0,0,0)];
 
   var geometry = new THREE.Geometry();
   geometry.dynamic = false;
@@ -571,9 +579,9 @@ THREE.Foliage.prototype.handle2DLevel = function (texture, textureIdx, level) {
 
   var material = new THREE.PointsMaterial();
   material.map = texture;
-  material.size = 5.0;
+  material.size = 2.0;
   material.sizeAuttenuation = false;
-  material.transparent = false;
+  material.transparent = true;
 
   //Billboard implementation ende
   //var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), new THREE.MeshBasicMaterial({ color : 0xff0000}));
@@ -617,3 +625,18 @@ THREE.Foliage.LodTemplate.prototype.meshes = [];
 THREE.Foliage.LodTemplate.prototype.addMesh = function (meshIdx, mesh) {
   this.meshes[meshIdx] = mesh;
 };
+function billboard(texture){
+  var texture = texture;
+  var vertices = [new THREE.Vector3(0,0,0)];
+
+  var geometry = new THREE.Geometry();
+  geometry.dynamic = false;
+  geometry.vertices = vertices;
+
+  var material = new THREE.PointsMaterial();
+  material.map = texture;
+  material.size = 2.0;
+  material.sizeAuttenuation = false;
+  material.transparent = true;
+  return new THREE.Points(geometry, material);
+}
