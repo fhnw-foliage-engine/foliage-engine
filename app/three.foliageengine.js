@@ -335,7 +335,7 @@ THREE.Foliage.prototype.modelLoaded = function (level, meshIdx) {
       new THREE.MeshBasicMaterial({color : 0x00ff00}));
     } */ //nicht benötigt?
     //else {
-      mesh = billboard(texture);
+     mesh = billboard(texture);
     //}
 
     mesh.scale.x = 0.5;
@@ -435,6 +435,7 @@ THREE.Foliage.prototype.createFoliage = function () {
               var mesh =
                 this.lodTemplates[lodLevel].meshes[pos.meshIdx].clone();
               if (scales[positionIdx] === undefined) {
+                //warum?
                 var scaleDiff = Math.random() * 0.1 - 0.2;
                 mesh.scale.x += scaleDiff;
                 mesh.scale.y += scaleDiff;
@@ -627,11 +628,14 @@ THREE.Foliage.LodTemplate.prototype.addMesh = function (meshIdx, mesh) {
 };
 function billboard(texture){
   var texture = texture;
-  var vertices = [new THREE.Vector3(0,0,0)];
+  //var vertices = [new THREE.Vector3(0,0,0)];
 
-  var geometry = new THREE.Geometry();
-  geometry.dynamic = false;
-  geometry.vertices = vertices;
+  var geometry = new THREE.BufferGeometry();
+  //var geometry = new THREE.BufferGeometry().fromGeometry(geo);
+  var lodObj = this.lodObjects;
+  for(var i = 0; i < lodObj.length; i++){
+    geometry.addAttribute('position', new THREE.BufferAttribute(lodObj[i].position, 3));
+  }
 
   var material = new THREE.PointsMaterial();
   material.map = texture;
