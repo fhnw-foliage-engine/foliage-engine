@@ -571,9 +571,9 @@
     },
 
     // fromPosition: is usually the camera position
-    calculateLevelOfDetail: function ( fromPosition ) {
+    updateLevelOfDetail: function ( fromPosition ) {
 
-      return this.root.calculateLevelOfDetail( fromPosition );
+      return this.root.updateLevelOfDetail( fromPosition );
 
     },
 
@@ -2062,14 +2062,51 @@
 
     },
 
-    // now iterate over all our nodes
-    calculateLevelOfDetail: function ( fromPosition ) {
+    // level of detail
 
-			var i, l;
+    updateLevelOfDetail: function ( fromPosition ) {
 
-			for ( i = 0, l = this.nodesIndices.length; i < l; i ++ ) {
+      hasAllEdgesWithinSameLevelOfDetail: function ( fromPosition ) {
+        // do some math to see if we are completely within the
+        // level of detail so we do not need to update any
+        // children.
+        return false;
+      };
 
-				this.nodesByIndex[ this.nodesIndices[ i ] ].calculateLevelOfDetail(fromPosition);
+      calculateLevelOfDetail: function ( fromPosition ) {
+        // do some math to calculate the level of detail
+        // from the position given (which is in our case
+        // the camera.
+        var levelOfDetail = 42;
+        return levelOfDetail;
+      }
+
+      willLevelOfDetailChange: function (from, to) {
+        var willChange = from !== to || from === -1;
+      }
+
+      if hasAllEdgesWithinSameLevelOfDetail ( fromPosition ) {
+        var oldLevelOfDetail = this.utilLevelOfDetail.nodeLevelOfDetail;
+        var newLevelOfDetail = calculateLevelOfDetail ( fromPosition );
+        var didLevelOfDetailChange = willLevelOfDetailChange( oldLevelOfDetail, newLevelOfDetail );
+
+        // we do not need to go any deeper -> all children will be in this LOD
+        this.utilLevelOfDetail.nodeLevelOfDetail = newLevelOfDetail;
+        this.utilLevelOfDetail.chilrenSameLevelOfDetail = true;
+
+        if (didLevelOfDetailChange) {
+          // callback to update the model?
+        }
+
+      } else {
+
+        // we need to go deeper
+        var i, l;
+        for ( i = 0, l = this.nodesIndices.length; i < l; i ++ ) {
+
+          this.nodesByIndex[ this.nodesIndices[ i ] ].updateLevelOfDetail( fromPosition );
+
+        }
 
       }
 
