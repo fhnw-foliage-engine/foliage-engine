@@ -568,7 +568,14 @@
 
 			return results;
 
-		},
+    },
+
+    // fromPosition: is usually the camera position
+    calculateLevelOfDetail: function ( fromPosition ) {
+
+      return this.root.calculateLevelOfDetail( fromPosition );
+
+    },
 
 		setRoot: function ( root ) {
 
@@ -725,7 +732,18 @@
 
 		this.utilVec31Branch = new THREE.Vector3();
 		this.utilVec31Expand = new THREE.Vector3();
-		this.utilVec31Ray = new THREE.Vector3();
+    this.utilVec31Ray = new THREE.Vector3();
+
+    // level of detail
+
+    this.utilLevelOfDetail = {
+      // LOD of this node
+      // if not undefined = -1
+      nodeLevelOfDetail: -1,
+      // all children have the same
+      // LOD as it's parent (this node)
+      chilrenSameLevelOfDetail: false
+    };
 
 		// handle parameters
 
@@ -1868,7 +1886,7 @@
 
 			return objects;
 
-		},
+    },
 
 		intersectSphere: function ( position, radius ) {
 
@@ -2026,7 +2044,7 @@
 
 			return count;
 
-		},
+    },
 
 		getObjectCountStart: function () {
 
@@ -2041,6 +2059,19 @@
 			}
 
 			return count;
+
+    },
+
+    // now iterate over all our nodes
+    calculateLevelOfDetail: function ( fromPosition ) {
+
+			var i, l;
+
+			for ( i = 0, l = this.nodesIndices.length; i < l; i ++ ) {
+
+				this.nodesByIndex[ this.nodesIndices[ i ] ].calculateLevelOfDetail(fromPosition);
+
+      }
 
 		},
 
