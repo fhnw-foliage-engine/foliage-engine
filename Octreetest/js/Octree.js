@@ -573,7 +573,7 @@
     // fromPosition: is usually the camera position
     updateLevelOfDetail: function ( fromPosition ) {
 
-      return this.root.updateLevelOfDetail( fromPosition );
+      this.root.updateLevelOfDetail( fromPosition );
 
     },
 
@@ -2066,26 +2066,33 @@
 
     updateLevelOfDetail: function ( fromPosition ) {
 
-      hasAllEdgesWithinSameLevelOfDetail: function ( fromPosition ) {
+      var hasAllEdgesWithinSameLevelOfDetail = function ( fromPosition ) {
         // do some math to see if we are completely within the
         // level of detail so we do not need to update any
         // children.
         return false;
       };
 
-      calculateLevelOfDetail: function ( fromPosition ) {
+      var calculateLevelOfDetail = function ( fromPosition ) {
         // do some math to calculate the level of detail
         // from the position given (which is in our case
         // the camera.
         var levelOfDetail = 42;
         return levelOfDetail;
-      }
+      };
 
-      willLevelOfDetailChange: function (from, to) {
-        var willChange = from !== to || from === -1;
-      }
+      var willLevelOfDetailChange = function (from, to) {
+        return from !== to || from === -1;
+      };
 
-      if hasAllEdgesWithinSameLevelOfDetail ( fromPosition ) {
+      console.log(this.left);
+      console.log(this.right);
+      console.log(this.bottom);
+      console.log(this.top);
+      console.log(this.front);
+      console.log(this.back);
+
+      if ( hasAllEdgesWithinSameLevelOfDetail ( fromPosition ) ) {
         var oldLevelOfDetail = this.utilLevelOfDetail.nodeLevelOfDetail;
         var newLevelOfDetail = calculateLevelOfDetail ( fromPosition );
         var didLevelOfDetailChange = willLevelOfDetailChange( oldLevelOfDetail, newLevelOfDetail );
