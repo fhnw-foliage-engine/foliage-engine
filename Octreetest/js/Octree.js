@@ -2123,10 +2123,10 @@
       var distanceBackRightEdge =
         this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.back);
 
-			var levelFrontLeftEdge = this.calculateLevelOfDetail(distanceFrontLeftEdge);
-			var levelFrontRightEdge = this.calculateLevelOfDetail(distanceFrontRightEdge);
-			var levelBackLeftEdge = this.calculateLevelOfDetail(distanceBackLeftEdge);
-			var levelBackRightEdge = this.calculateLevelOfDetail(distanceBackRightEdge);
+			var levelFrontLeftEdge = this.calculateLevelOfDetailFromDistance(distanceFrontLeftEdge);
+			var levelFrontRightEdge = this.calculateLevelOfDetailFromDistance(distanceFrontRightEdge);
+			var levelBackLeftEdge = this.calculateLevelOfDetailFromDistance(distanceBackLeftEdge);
+			var levelBackRightEdge = this.calculateLevelOfDetailFromDistance(distanceBackRightEdge);
 
       var hasAllEdgesSameLevelOfDetail = levelFrontLeftEdge === levelFrontRightEdge &&
         levelFrontRightEdge === levelBackLeftEdge &&
@@ -2147,13 +2147,42 @@
 			return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 		},
 
-		calculateLevelOfDetail: function ( distance ) {
+		calculateLevelOfDetailFromDistance: function ( distance ) {
 			var i, l;
 			l = this.tree.levelOfDetailRange;
 			for(i = 0; i < l.length; i++){
 				if(distance <=  l[i]) return i;
 			}
 			return i;
+		},
+
+		calculateLevelOfDetail: function ( fromPosition ) {
+			var distanceFrontLeftEdge =
+        		this.calculateDistance(fromPosition.x, fromPosition.y, this.left, this.front);
+
+      		var distanceFrontRightEdge =
+        		this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.front);
+
+      		var distanceBackLeftEdge =
+      			this.calculateDistance(fromPosition.x, fromPosition.y, this.left, this.back);
+
+      		var distanceBackRightEdge =
+        		this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.back);
+
+			var levelFrontLeftEdge = this.calculateLevelOfDetail(distanceFrontLeftEdge);
+			var levelFrontRightEdge = this.calculateLevelOfDetail(distanceFrontRightEdge);
+			var levelBackLeftEdge = this.calculateLevelOfDetail(distanceBackLeftEdge);
+			var levelBackRightEdge = this.calculateLevelOfDetail(distanceBackRightEdge);
+
+			var hasAllEdgesSameLevelOfDetail = levelFrontLeftEdge === levelFrontRightEdge &&
+       			levelFrontRightEdge === levelBackLeftEdge &&
+        		levelBackLeftEdge === levelBackRightEdge;
+
+        	if(hasAllEdgesSameLevelOfDetail) {
+        		return levelFrontLeftEdge;
+        	} else {
+        		return undefined;
+        	}
 		},
 
 		toConsole: function ( space ) {
