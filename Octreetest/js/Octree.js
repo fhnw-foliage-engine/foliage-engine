@@ -2111,31 +2111,10 @@
 
     hasAllEdgesWithinSameLevelOfDetail: function ( fromPosition ) {
 
-      var distanceFrontLeftEdge =
-        this.calculateDistance(fromPosition.x, fromPosition.y, this.left, this.front);
+      var levelOfDetail = calculateLevelOfDetail(fromPositon);
 
-      var distanceFrontRightEdge =
-        this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.front);
+      var hasAllEdgesSameLevelOfDetail = levelOfDetail ? true : false;
 
-      var distanceBackLeftEdge =
-        this.calculateDistance(fromPosition.x, fromPosition.y, this.left, this.back);
-
-      var distanceBackRightEdge =
-        this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.back);
-
-			var levelFrontLeftEdge = this.calculateLevelOfDetailFromDistance(distanceFrontLeftEdge);
-			var levelFrontRightEdge = this.calculateLevelOfDetailFromDistance(distanceFrontRightEdge);
-			var levelBackLeftEdge = this.calculateLevelOfDetailFromDistance(distanceBackLeftEdge);
-			var levelBackRightEdge = this.calculateLevelOfDetailFromDistance(distanceBackRightEdge);
-
-      var hasAllEdgesSameLevelOfDetail = levelFrontLeftEdge === levelFrontRightEdge &&
-        levelFrontRightEdge === levelBackLeftEdge &&
-        levelBackLeftEdge === levelBackRightEdge;
-
-      console.log(distanceFrontLeftEdge);
-      console.log(distanceFrontRightEdge);
-      console.log(distanceBackLeftEdge);
-      console.log(distanceBackRightEdge);
       console.log(hasAllEdgesSameLevelOfDetail);
       return hasAllEdgesSameLevelOfDetail;
 
@@ -2168,6 +2147,11 @@
 
       		var distanceBackRightEdge =
         		this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.back);
+
+   	    	console.log(distanceFrontLeftEdge);
+    		console.log(distanceFrontRightEdge);
+      		console.log(distanceBackLeftEdge);
+      		console.log(distanceBackRightEdge);
 
 			var levelFrontLeftEdge = this.calculateLevelOfDetail(distanceFrontLeftEdge);
 			var levelFrontRightEdge = this.calculateLevelOfDetail(distanceFrontRightEdge);
