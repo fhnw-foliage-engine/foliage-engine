@@ -9,7 +9,8 @@
     "url": "https://github.com/livioso/strawberry"
   },
   "dependencies": {
-    "gulp": "*"
+    "gulp": "*",
+    "three": "^0.73.0"
   },
   "devDependencies": {
     "bower": "^1.5.2",

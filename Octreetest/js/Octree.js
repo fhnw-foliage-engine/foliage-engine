@@ -2107,18 +2107,28 @@
 
 		},
 
-		hasAllEdgesWithinSameLevelOfDetail: function ( fromPosition ) {
-			var distanceFrontLeftEdge = calculateDistance(fromPosition.x, fromPosition.y, this.left, this.front)
-			var distanceFrontRightEdge = calculateDistance(fromPosition.x, fromPosition.y, this.right, this.front)
-			var distanceBackLeftEdge = calculateDistance(fromPosition.x, fromPosition.y, this.left, this.back)
-			var distanceBackRightEdge = calculateDistance(fromPosition.x, fromPosition.y, this.right, this.back)
+    hasAllEdgesWithinSameLevelOfDetail: function ( fromPosition ) {
 
-			var levelFrontLeftEdge = getLODLevel(distanceFrontLeftEdge)
-			var levelFrontRightEdge = getLODLevel(distanceFrontRightEdge)
-			var levelBackLeftEdge = getLODLevel(distanceBackLeftEdge)
-			var levelBackRightEdge = getLODLevel(distanceBackRightEdge)
+      var distanceFrontLeftEdge =
+        calculateDistance(fromPosition.x, fromPosition.y, this.left, this.front);
 
-			return levelFrontLeftEdge == levelFrontRightEdge && levelFrontRightEdge == levelBackLeftEdge && levelBackLeftEdge == levelBackRightEdge
+      var distanceFrontRightEdge =
+        calculateDistance(fromPosition.x, fromPosition.y, this.right, this.front);
+
+      var distanceBackLeftEdge =
+        calculateDistance(fromPosition.x, fromPosition.y, this.left, this.back);
+
+      var distanceBackRightEdge =
+        calculateDistance(fromPosition.x, fromPosition.y, this.right, this.back);
+
+			var levelFrontLeftEdge = getLODLevel(distanceFrontLeftEdge);
+			var levelFrontRightEdge = getLODLevel(distanceFrontRightEdge);
+			var levelBackLeftEdge = getLODLevel(distanceBackLeftEdge);
+			var levelBackRightEdge = getLODLevel(distanceBackRightEdge);
+
+      return levelFrontLeftEdge === levelFrontRightEdge &&
+        levelFrontRightEdge === levelBackLeftEdge &&
+        levelBackLeftEdge === levelBackRightEdge;
 
 		},
 
