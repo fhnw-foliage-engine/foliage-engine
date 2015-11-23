@@ -135,6 +135,7 @@
     this.objectsThreshold = isNumber( parameters.objectsThreshold ) ? parameters.objectsThreshold : 8;
     this.overlapPct = isNumber( parameters.overlapPct ) ? parameters.overlapPct : 0.15;
     this.undeferred = parameters.undeferred || false;
+    this.levelOfDetailRange = parameters.levelOfDetailRange || [1 ,5, 8, 50]
 
     this.root = parameters.root instanceof THREE.OctreeNode ? parameters.root : new THREE.OctreeNode( parameters );
 
@@ -2066,21 +2067,6 @@
 
     updateLevelOfDetail: function ( fromPosition ) {
 
-      var hasAllEdgesWithinSameLevelOfDetail = function ( fromPosition ) {
-        // do some math to see if we are completely within the
-        // level of detail so we do not need to update any
-        // children.
-        return false;
-      };
-
-      var calculateLevelOfDetail = function ( fromPosition ) {
-        // do some math to calculate the level of detail
-        // from the position given (which is in our case
-        // the camera.
-        var levelOfDetail = 42;
-        return levelOfDetail;
-      };
-
       var willLevelOfDetailChange = function (from, to) {
         return from !== to || from === -1;
       };
@@ -2119,6 +2105,36 @@
 
       }
 
+		},
+
+		hasAllEdgesWithinSameLevelOfDetail: function ( fromPosition ) {
+			var distanceFrontLeftEdge = calculateDistance(fromPosition.x, fromPosition.y, this.left, this.front)
+			var distanceFrontRightEdge = calculateDistance(fromPosition.x, fromPosition.y, this.right, this.front)
+			var distanceBackLeftEdge = calculateDistance(fromPosition.x, fromPosition.y, this.left, this.back)
+			var distanceBackRightEdge = calculateDistance(fromPosition.x, fromPosition.y, this.right, this.back)
+
+			var levelFrontLeftEdge = getLODLevel(distanceFrontLeftEdge)
+			var levelFrontRightEdge = getLODLevel(distanceFrontRightEdge)
+			var levelBackLeftEdge = getLODLevel(distanceBackLeftEdge)
+			var levelBackRightEdge = getLODLevel(distanceBackRightEdge)
+
+			return levelFrontLeftEdge == levelFrontRightEdge && levelFrontRightEdge == levelBackLeftEdge && levelBackLeftEdge == levelBackRightEdge
+
+		},
+
+		calculateDistance: function ( x1, y1, x2, y2) {
+			var a = Math.abs(x1 - x2)
+			var b = Math.abs(y1 - y2)
+			return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2))
+		},
+
+		calculateLevelOfDetail: function ( distance ){
+			var i, l
+			l = this.root.tree.levelOfDetailRange
+			for(i = 0; i < l.length; i++){
+				if(distance <=  l[i]) return i
+			}
+			return i
 		},
 
 		toConsole: function ( space ) {
