@@ -2137,16 +2137,16 @@
 
 		calculateLevelOfDetail: function ( fromPosition ) {
 			var distanceFrontLeftEdge =
-        		this.calculateDistance(fromPosition.x, fromPosition.y, this.left, this.front);
+        		this.calculateDistanceFromDistance(fromPosition.x, fromPosition.y, this.left, this.front);
 
       		var distanceFrontRightEdge =
-        		this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.front);
+        		this.calculateDistanceFromDistance(fromPosition.x, fromPosition.y, this.right, this.front);
 
       		var distanceBackLeftEdge =
-      			this.calculateDistance(fromPosition.x, fromPosition.y, this.left, this.back);
+      			this.calculateDistanceFromDistance(fromPosition.x, fromPosition.y, this.left, this.back);
 
       		var distanceBackRightEdge =
-        		this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.back);
+        		this.calculateDistanceFromDistance(fromPosition.x, fromPosition.y, this.right, this.back);
 
    	    	console.log(distanceFrontLeftEdge);
     		console.log(distanceFrontRightEdge);
