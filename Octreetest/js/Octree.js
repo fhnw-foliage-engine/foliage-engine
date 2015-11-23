@@ -2114,11 +2114,6 @@
       var distanceFrontLeftEdge =
         this.calculateDistance(fromPosition.x, fromPosition.y, this.left, this.front);
 
-      console.log(fromPosition.x);
-      console.log(fromPosition.y);
-      console.log(this.left);
-      console.log(this.front);
-
       var distanceFrontRightEdge =
         this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.front);
 
@@ -2137,6 +2132,10 @@
         levelFrontRightEdge === levelBackLeftEdge &&
         levelBackLeftEdge === levelBackRightEdge;
 
+      console.log(distanceFrontLeftEdge);
+      console.log(distanceFrontRightEdge);
+      console.log(distanceBackLeftEdge);
+      console.log(distanceBackRightEdge);
       console.log(hasAllEdgesSameLevelOfDetail);
       return hasAllEdgesSameLevelOfDetail;
 
