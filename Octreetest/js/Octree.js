@@ -2113,7 +2113,7 @@
 
       var levelOfDetail = calculateLevelOfDetail(fromPositon);
 
-      var hasAllEdgesSameLevelOfDetail = levelOfDetail ? true : false;
+      var hasAllEdgesSameLevelOfDetail = levelOfDetail === undefined ? false : true;
 
       console.log(hasAllEdgesSameLevelOfDetail);
       return hasAllEdgesSameLevelOfDetail;
