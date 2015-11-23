@@ -2065,6 +2065,7 @@
 
     // level of detail
 
+
     updateLevelOfDetail: function ( fromPosition ) {
 
       var willLevelOfDetailChange = function (from, to) {
@@ -2078,9 +2079,9 @@
       console.log(this.front);
       console.log(this.back);
 
-      if ( hasAllEdgesWithinSameLevelOfDetail ( fromPosition ) ) {
+      if ( this.hasAllEdgesWithinSameLevelOfDetail ( fromPosition ) ) {
         var oldLevelOfDetail = this.utilLevelOfDetail.nodeLevelOfDetail;
-        var newLevelOfDetail = calculateLevelOfDetail ( fromPosition );
+        var newLevelOfDetail = this.calculateLevelOfDetail ( fromPosition );
         var didLevelOfDetailChange = willLevelOfDetailChange( oldLevelOfDetail, newLevelOfDetail );
 
         // we do not need to go any deeper -> all children will be in this LOD
@@ -2090,7 +2091,8 @@
         if (didLevelOfDetailChange) {
           // send the event to notify the object
           // about its changed level of detail
-          this.dispatchEvent ( { type:'changedLevelOfDetail' } );
+          // this.dispatchEvent ( { type:'changedLevelOfDetail' } );
+          console.log("updated");
         }
 
       } else {
@@ -2110,41 +2112,49 @@
     hasAllEdgesWithinSameLevelOfDetail: function ( fromPosition ) {
 
       var distanceFrontLeftEdge =
-        calculateDistance(fromPosition.x, fromPosition.y, this.left, this.front);
+        this.calculateDistance(fromPosition.x, fromPosition.y, this.left, this.front);
+
+      console.log(fromPosition.x);
+      console.log(fromPosition.y);
+      console.log(this.left);
+      console.log(this.front);
 
       var distanceFrontRightEdge =
-        calculateDistance(fromPosition.x, fromPosition.y, this.right, this.front);
+        this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.front);
 
       var distanceBackLeftEdge =
-        calculateDistance(fromPosition.x, fromPosition.y, this.left, this.back);
+        this.calculateDistance(fromPosition.x, fromPosition.y, this.left, this.back);
 
       var distanceBackRightEdge =
-        calculateDistance(fromPosition.x, fromPosition.y, this.right, this.back);
+        this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.back);
 
-			var levelFrontLeftEdge = getLODLevel(distanceFrontLeftEdge);
-			var levelFrontRightEdge = getLODLevel(distanceFrontRightEdge);
-			var levelBackLeftEdge = getLODLevel(distanceBackLeftEdge);
-			var levelBackRightEdge = getLODLevel(distanceBackRightEdge);
+			var levelFrontLeftEdge = this.calculateLevelOfDetail(distanceFrontLeftEdge);
+			var levelFrontRightEdge = this.calculateLevelOfDetail(distanceFrontRightEdge);
+			var levelBackLeftEdge = this.calculateLevelOfDetail(distanceBackLeftEdge);
+			var levelBackRightEdge = this.calculateLevelOfDetail(distanceBackRightEdge);
 
-      return levelFrontLeftEdge === levelFrontRightEdge &&
+      var hasAllEdgesSameLevelOfDetail = levelFrontLeftEdge === levelFrontRightEdge &&
         levelFrontRightEdge === levelBackLeftEdge &&
         levelBackLeftEdge === levelBackRightEdge;
 
-		},
+      console.log(hasAllEdgesSameLevelOfDetail);
+      return hasAllEdgesSameLevelOfDetail;
+
+    },
 
 		calculateDistance: function ( x1, y1, x2, y2) {
-			var a = Math.abs(x1 - x2)
-			var b = Math.abs(y1 - y2)
-			return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2))
+			var a = Math.abs(x1 - x2);
+			var b = Math.abs(y1 - y2);
+			return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 		},
 
-		calculateLevelOfDetail: function ( distance ){
-			var i, l
-			l = this.root.tree.levelOfDetailRange
+		calculateLevelOfDetail: function ( distance ) {
+			var i, l;
+			l = this.tree.levelOfDetailRange;
 			for(i = 0; i < l.length; i++){
-				if(distance <=  l[i]) return i
+				if(distance <=  l[i]) return i;
 			}
-			return i
+			return i;
 		},
 
 		toConsole: function ( space ) {
