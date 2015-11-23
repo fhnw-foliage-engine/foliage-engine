@@ -7,566 +7,566 @@
  * based on Dynamic Octree by Piko3D @ http://www.piko3d.com/ and Octree by Marek Pawlowski @ pawlowski.it
  *
  */
- ( function ( THREE ) {
+( function ( THREE ) {
 
-	"use strict";
+  "use strict";
 
-	/*===================================================
+  /*===================================================
 
-	utility
+    utility
 
-	=====================================================*/
+    =====================================================*/
 
-	function isNumber ( n ) {
+  function isNumber ( n ) {
 
-		return ! isNaN( n ) && isFinite( n );
+    return ! isNaN( n ) && isFinite( n );
 
-	}
+  }
 
-	function isArray ( target ) {
+  function isArray ( target ) {
 
-		return Object.prototype.toString.call( target ) === '[object Array]';
+    return Object.prototype.toString.call( target ) === '[object Array]';
 
-	}
+  }
 
-	function toArray ( target ) {
+  function toArray ( target ) {
 
-		return target ? ( isArray ( target ) !== true ? [ target ] : target ) : [];
+    return target ? ( isArray ( target ) !== true ? [ target ] : target ) : [];
 
-	}
+  }
 
-	function indexOfValue( array, value ) {
+  function indexOfValue( array, value ) {
 
-		for ( var i = 0, il = array.length; i < il; i ++ ) {
+    for ( var i = 0, il = array.length; i < il; i ++ ) {
 
-			if ( array[ i ] === value ) {
+      if ( array[ i ] === value ) {
 
-				return i;
+        return i;
 
-			}
+      }
 
-		}
+    }
 
-		return - 1;
+    return - 1;
 
-	}
+  }
 
-	function indexOfPropertyWithValue( array, property, value ) {
+  function indexOfPropertyWithValue( array, property, value ) {
 
-		for ( var i = 0, il = array.length; i < il; i ++ ) {
+    for ( var i = 0, il = array.length; i < il; i ++ ) {
 
-			if ( array[ i ][ property ] === value ) {
+      if ( array[ i ][ property ] === value ) {
 
-				return i;
+        return i;
 
-			}
+      }
 
-		}
+    }
 
-		return - 1;
+    return - 1;
 
-	}
+  }
 
-	/*===================================================
+  /*===================================================
 
-	octree
+    octree
 
-	=====================================================*/
+    =====================================================*/
 
-	THREE.Octree = function ( parameters ) {
+  THREE.Octree = function ( parameters ) {
 
-		// handle parameters
+    // handle parameters
 
-		parameters = parameters || {};
+    parameters = parameters || {};
 
-		parameters.tree = this;
+    parameters.tree = this;
 
-		// static properties ( modification is not recommended )
+    // static properties ( modification is not recommended )
 
-		this.nodeCount = 0;
+    this.nodeCount = 0;
 
-		this.INDEX_INSIDE_CROSS = - 1;
-		this.INDEX_OUTSIDE_OFFSET = 2;
+    this.INDEX_INSIDE_CROSS = - 1;
+    this.INDEX_OUTSIDE_OFFSET = 2;
 
-		this.INDEX_OUTSIDE_POS_X = isNumber( parameters.INDEX_OUTSIDE_POS_X ) ? parameters.INDEX_OUTSIDE_POS_X : 0;
-		this.INDEX_OUTSIDE_NEG_X = isNumber( parameters.INDEX_OUTSIDE_NEG_X ) ? parameters.INDEX_OUTSIDE_NEG_X : 1;
-		this.INDEX_OUTSIDE_POS_Y = isNumber( parameters.INDEX_OUTSIDE_POS_Y ) ? parameters.INDEX_OUTSIDE_POS_Y : 2;
-		this.INDEX_OUTSIDE_NEG_Y = isNumber( parameters.INDEX_OUTSIDE_NEG_Y ) ? parameters.INDEX_OUTSIDE_NEG_Y : 3;
-		this.INDEX_OUTSIDE_POS_Z = isNumber( parameters.INDEX_OUTSIDE_POS_Z ) ? parameters.INDEX_OUTSIDE_POS_Z : 4;
-		this.INDEX_OUTSIDE_NEG_Z = isNumber( parameters.INDEX_OUTSIDE_NEG_Z ) ? parameters.INDEX_OUTSIDE_NEG_Z : 5;
+    this.INDEX_OUTSIDE_POS_X = isNumber( parameters.INDEX_OUTSIDE_POS_X ) ? parameters.INDEX_OUTSIDE_POS_X : 0;
+    this.INDEX_OUTSIDE_NEG_X = isNumber( parameters.INDEX_OUTSIDE_NEG_X ) ? parameters.INDEX_OUTSIDE_NEG_X : 1;
+    this.INDEX_OUTSIDE_POS_Y = isNumber( parameters.INDEX_OUTSIDE_POS_Y ) ? parameters.INDEX_OUTSIDE_POS_Y : 2;
+    this.INDEX_OUTSIDE_NEG_Y = isNumber( parameters.INDEX_OUTSIDE_NEG_Y ) ? parameters.INDEX_OUTSIDE_NEG_Y : 3;
+    this.INDEX_OUTSIDE_POS_Z = isNumber( parameters.INDEX_OUTSIDE_POS_Z ) ? parameters.INDEX_OUTSIDE_POS_Z : 4;
+    this.INDEX_OUTSIDE_NEG_Z = isNumber( parameters.INDEX_OUTSIDE_NEG_Z ) ? parameters.INDEX_OUTSIDE_NEG_Z : 5;
 
-		this.INDEX_OUTSIDE_MAP = [];
-		this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_POS_X ] = { index: this.INDEX_OUTSIDE_POS_X, count: 0, x: 1, y: 0, z: 0 };
-		this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_NEG_X ] = { index: this.INDEX_OUTSIDE_NEG_X, count: 0, x: - 1, y: 0, z: 0 };
-		this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_POS_Y ] = { index: this.INDEX_OUTSIDE_POS_Y, count: 0, x: 0, y: 1, z: 0 };
-		this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_NEG_Y ] = { index: this.INDEX_OUTSIDE_NEG_Y, count: 0, x: 0, y: - 1, z: 0 };
-		this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_POS_Z ] = { index: this.INDEX_OUTSIDE_POS_Z, count: 0, x: 0, y: 0, z: 1 };
-		this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_NEG_Z ] = { index: this.INDEX_OUTSIDE_NEG_Z, count: 0, x: 0, y: 0, z: - 1 };
+    this.INDEX_OUTSIDE_MAP = [];
+    this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_POS_X ] = { index: this.INDEX_OUTSIDE_POS_X, count: 0, x: 1, y: 0, z: 0 };
+    this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_NEG_X ] = { index: this.INDEX_OUTSIDE_NEG_X, count: 0, x: - 1, y: 0, z: 0 };
+    this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_POS_Y ] = { index: this.INDEX_OUTSIDE_POS_Y, count: 0, x: 0, y: 1, z: 0 };
+    this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_NEG_Y ] = { index: this.INDEX_OUTSIDE_NEG_Y, count: 0, x: 0, y: - 1, z: 0 };
+    this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_POS_Z ] = { index: this.INDEX_OUTSIDE_POS_Z, count: 0, x: 0, y: 0, z: 1 };
+    this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_NEG_Z ] = { index: this.INDEX_OUTSIDE_NEG_Z, count: 0, x: 0, y: 0, z: - 1 };
 
-		this.FLAG_POS_X = 1 << ( this.INDEX_OUTSIDE_POS_X + 1 );
-		this.FLAG_NEG_X = 1 << ( this.INDEX_OUTSIDE_NEG_X + 1 );
-		this.FLAG_POS_Y = 1 << ( this.INDEX_OUTSIDE_POS_Y + 1 );
-		this.FLAG_NEG_Y = 1 << ( this.INDEX_OUTSIDE_NEG_Y + 1 );
-		this.FLAG_POS_Z = 1 << ( this.INDEX_OUTSIDE_POS_Z + 1 );
-		this.FLAG_NEG_Z = 1 << ( this.INDEX_OUTSIDE_NEG_Z + 1 );
+    this.FLAG_POS_X = 1 << ( this.INDEX_OUTSIDE_POS_X + 1 );
+    this.FLAG_NEG_X = 1 << ( this.INDEX_OUTSIDE_NEG_X + 1 );
+    this.FLAG_POS_Y = 1 << ( this.INDEX_OUTSIDE_POS_Y + 1 );
+    this.FLAG_NEG_Y = 1 << ( this.INDEX_OUTSIDE_NEG_Y + 1 );
+    this.FLAG_POS_Z = 1 << ( this.INDEX_OUTSIDE_POS_Z + 1 );
+    this.FLAG_NEG_Z = 1 << ( this.INDEX_OUTSIDE_NEG_Z + 1 );
 
-		this.utilVec31Search = new THREE.Vector3();
-		this.utilVec32Search = new THREE.Vector3();
+    this.utilVec31Search = new THREE.Vector3();
+    this.utilVec32Search = new THREE.Vector3();
 
-		// pass scene to see octree structure
+    // pass scene to see octree structure
 
-		this.scene = parameters.scene;
+    this.scene = parameters.scene;
 
-		if ( this.scene ) {
+    if ( this.scene ) {
 
-			this.visualGeometry = new THREE.BoxGeometry( 1, 1, 1 );
-			this.visualMaterial = new THREE.MeshBasicMaterial( { color: 0xFF0066, wireframe: true, wireframeLinewidth: 1 } );
+      this.visualGeometry = new THREE.BoxGeometry( 1, 1, 1 );
+      this.visualMaterial = new THREE.MeshBasicMaterial( { color: 0xFF0066, wireframe: true, wireframeLinewidth: 1 } );
 
-		}
+    }
 
-		// properties
+    // properties
 
-		this.objects = [];
-		this.objectsMap = {};
-		this.objectsData = [];
-		this.objectsDeferred = [];
+    this.objects = [];
+    this.objectsMap = {};
+    this.objectsData = [];
+    this.objectsDeferred = [];
 
-		this.depthMax = isNumber( parameters.depthMax ) ? parameters.depthMax : Infinity;
-		this.objectsThreshold = isNumber( parameters.objectsThreshold ) ? parameters.objectsThreshold : 8;
-		this.overlapPct = isNumber( parameters.overlapPct ) ? parameters.overlapPct : 0.15;
-		this.undeferred = parameters.undeferred || false;
+    this.depthMax = isNumber( parameters.depthMax ) ? parameters.depthMax : Infinity;
+    this.objectsThreshold = isNumber( parameters.objectsThreshold ) ? parameters.objectsThreshold : 8;
+    this.overlapPct = isNumber( parameters.overlapPct ) ? parameters.overlapPct : 0.15;
+    this.undeferred = parameters.undeferred || false;
 
-		this.root = parameters.root instanceof THREE.OctreeNode ? parameters.root : new THREE.OctreeNode( parameters );
+    this.root = parameters.root instanceof THREE.OctreeNode ? parameters.root : new THREE.OctreeNode( parameters );
 
-	};
+  };
 
-	THREE.Octree.prototype = {
+  THREE.Octree.prototype = {
 
-		update: function () {
+    update: function () {
 
-			// add any deferred objects that were waiting for render cycle
+      // add any deferred objects that were waiting for render cycle
 
-			if ( this.objectsDeferred.length > 0 ) {
+      if ( this.objectsDeferred.length > 0 ) {
 
-				for ( var i = 0, il = this.objectsDeferred.length; i < il; i ++ ) {
+        for ( var i = 0, il = this.objectsDeferred.length; i < il; i ++ ) {
 
-					var deferred = this.objectsDeferred[ i ];
+          var deferred = this.objectsDeferred[ i ];
 
-					this.addDeferred( deferred.object, deferred.options );
+          this.addDeferred( deferred.object, deferred.options );
 
-				}
+        }
 
-				this.objectsDeferred.length = 0;
+        this.objectsDeferred.length = 0;
 
-			}
+      }
 
-		},
+    },
 
-		add: function ( object, options ) {
+    add: function ( object, options ) {
 
-			// add immediately
+      // add immediately
 
-			if ( this.undeferred ) {
+      if ( this.undeferred ) {
 
-				this.updateObject( object );
+        this.updateObject( object );
 
-				this.addDeferred( object, options );
+        this.addDeferred( object, options );
 
-			} else {
+      } else {
 
-				// defer add until update called
+        // defer add until update called
 
-				this.objectsDeferred.push( { object: object, options: options } );
+        this.objectsDeferred.push( { object: object, options: options } );
 
-			}
+      }
 
-		},
+    },
 
-		addDeferred: function ( object, options ) {
+    addDeferred: function ( object, options ) {
 
-			var i, l,
-				geometry,
-				faces,
-				useFaces,
-				vertices,
-				useVertices,
-				objectData;
+      var i, l,
+      geometry,
+      faces,
+      useFaces,
+      vertices,
+      useVertices,
+      objectData;
 
-			// ensure object is not object data
+      // ensure object is not object data
 
-			if ( object instanceof THREE.OctreeObjectData ) {
+      if ( object instanceof THREE.OctreeObjectData ) {
 
-				object = object.object;
+        object = object.object;
 
-			}
+      }
 
-			// check uuid to avoid duplicates
+      // check uuid to avoid duplicates
 
-			if ( ! object.uuid ) {
+      if ( ! object.uuid ) {
 
-				object.uuid = THREE.Math.generateUUID();
+        object.uuid = THREE.Math.generateUUID();
 
-			}
+      }
 
-			if ( ! this.objectsMap[ object.uuid ] ) {
+      if ( ! this.objectsMap[ object.uuid ] ) {
 
-				// store
+        // store
 
-				this.objects.push( object );
-				this.objectsMap[ object.uuid ] = object;
+        this.objects.push( object );
+        this.objectsMap[ object.uuid ] = object;
 
-				// check options
+        // check options
 
-				if ( options ) {
+        if ( options ) {
 
-					useFaces = options.useFaces;
-					useVertices = options.useVertices;
+          useFaces = options.useFaces;
+          useVertices = options.useVertices;
 
-				}
+        }
 
-				if ( useVertices === true ) {
+        if ( useVertices === true ) {
 
-					geometry = object.geometry;
-					vertices = geometry.vertices;
+          geometry = object.geometry;
+          vertices = geometry.vertices;
 
-					for ( i = 0, l = vertices.length; i < l; i ++ ) {
+          for ( i = 0, l = vertices.length; i < l; i ++ ) {
 
-						this.addObjectData( object, vertices[ i ] );
+            this.addObjectData( object, vertices[ i ] );
 
-					}
+          }
 
-				} else if ( useFaces === true ) {
+        } else if ( useFaces === true ) {
 
-					geometry = object.geometry;
-					faces = geometry.faces;
+          geometry = object.geometry;
+          faces = geometry.faces;
 
-					for ( i = 0, l = faces.length; i < l; i ++ ) {
+          for ( i = 0, l = faces.length; i < l; i ++ ) {
 
-						this.addObjectData( object, faces[ i ] );
+            this.addObjectData( object, faces[ i ] );
 
-					}
+          }
 
-				} else {
+        } else {
 
-					this.addObjectData( object );
+          this.addObjectData( object );
 
-				}
+        }
 
-			}
+      }
 
-		},
+    },
 
-		addObjectData: function ( object, part ) {
+    addObjectData: function ( object, part ) {
 
-			var objectData = new THREE.OctreeObjectData( object, part );
+      var objectData = new THREE.OctreeObjectData( object, part );
 
-			// add to tree objects data list
+      // add to tree objects data list
 
-			this.objectsData.push( objectData );
+      this.objectsData.push( objectData );
 
-			// add to nodes
+      // add to nodes
 
-			this.root.addObject( objectData );
+      this.root.addObject( objectData );
 
-		},
+    },
 
-		remove: function ( object ) {
+    remove: function ( object ) {
 
-			var i, l,
-				objectData = object,
-				index,
-				objectsDataRemoved;
+      var i, l,
+      objectData = object,
+        index,
+        objectsDataRemoved;
 
-			// ensure object is not object data for index search
+        // ensure object is not object data for index search
 
-			if ( object instanceof THREE.OctreeObjectData ) {
+        if ( object instanceof THREE.OctreeObjectData ) {
 
-				object = object.object;
+          object = object.object;
 
-			}
+        }
 
-			// check uuid
+        // check uuid
 
-			if ( this.objectsMap[ object.uuid ] ) {
+        if ( this.objectsMap[ object.uuid ] ) {
 
-				this.objectsMap[ object.uuid ] = undefined;
+          this.objectsMap[ object.uuid ] = undefined;
 
-				// check and remove from objects, nodes, and data lists
+          // check and remove from objects, nodes, and data lists
 
-				index = indexOfValue( this.objects, object );
+          index = indexOfValue( this.objects, object );
 
-				if ( index !== - 1 ) {
+          if ( index !== - 1 ) {
 
-					this.objects.splice( index, 1 );
+            this.objects.splice( index, 1 );
 
-					// remove from nodes
+            // remove from nodes
 
-					objectsDataRemoved = this.root.removeObject( objectData );
+            objectsDataRemoved = this.root.removeObject( objectData );
 
-					// remove from objects data list
+            // remove from objects data list
 
-					for ( i = 0, l = objectsDataRemoved.length; i < l; i ++ ) {
+            for ( i = 0, l = objectsDataRemoved.length; i < l; i ++ ) {
 
-						objectData = objectsDataRemoved[ i ];
+              objectData = objectsDataRemoved[ i ];
 
-						index = indexOfValue( this.objectsData, objectData );
+              index = indexOfValue( this.objectsData, objectData );
 
-						if ( index !== - 1 ) {
+              if ( index !== - 1 ) {
 
-							this.objectsData.splice( index, 1 );
+                this.objectsData.splice( index, 1 );
 
-						}
+              }
 
-					}
+            }
 
-				}
+          }
 
-			} else if ( this.objectsDeferred.length > 0 ) {
+        } else if ( this.objectsDeferred.length > 0 ) {
 
-				// check and remove from deferred
+          // check and remove from deferred
 
-				index = indexOfPropertyWithValue( this.objectsDeferred, 'object', object );
+          index = indexOfPropertyWithValue( this.objectsDeferred, 'object', object );
 
-				if ( index !== - 1 ) {
+          if ( index !== - 1 ) {
 
-					this.objectsDeferred.splice( index, 1 );
+            this.objectsDeferred.splice( index, 1 );
 
-				}
+          }
 
-			}
+        }
 
-		},
+    },
 
-		extend: function ( octree ) {
+    extend: function ( octree ) {
 
-			var i, l,
-				objectsData,
-				objectData;
+      var i, l,
+      objectsData,
+      objectData;
 
-			if ( octree instanceof THREE.Octree ) {
+      if ( octree instanceof THREE.Octree ) {
 
-				// for each object data
+        // for each object data
 
-				objectsData = octree.objectsData;
+        objectsData = octree.objectsData;
 
-				for ( i = 0, l = objectsData.length; i < l; i ++ ) {
+        for ( i = 0, l = objectsData.length; i < l; i ++ ) {
 
-					objectData = objectsData[ i ];
+          objectData = objectsData[ i ];
 
-					this.add( objectData, { useFaces: objectData.faces, useVertices: objectData.vertices } );
+          this.add( objectData, { useFaces: objectData.faces, useVertices: objectData.vertices } );
 
-				}
+        }
 
-			}
+      }
 
-		},
+    },
 
-		rebuild: function () {
+    rebuild: function () {
 
-			var i, l,
-				node,
-				object,
-				objectData,
-				indexOctant,
-				indexOctantLast,
-				objectsUpdate = [];
+      var i, l,
+      node,
+      object,
+      objectData,
+      indexOctant,
+      indexOctantLast,
+      objectsUpdate = [];
 
-			// check all object data for changes in position
-			// assumes all object matrices are up to date
+      // check all object data for changes in position
+      // assumes all object matrices are up to date
 
-			for ( i = 0, l = this.objectsData.length; i < l; i ++ ) {
+      for ( i = 0, l = this.objectsData.length; i < l; i ++ ) {
 
-				objectData = this.objectsData[ i ];
+        objectData = this.objectsData[ i ];
 
-				node = objectData.node;
+        node = objectData.node;
 
-				// update object
+        // update object
 
-				objectData.update();
+        objectData.update();
 
-				// if position has changed since last organization of object in tree
+        // if position has changed since last organization of object in tree
 
-				if ( node instanceof THREE.OctreeNode && ! objectData.positionLast.equals( objectData.position ) ) {
+        if ( node instanceof THREE.OctreeNode && ! objectData.positionLast.equals( objectData.position ) ) {
 
-					// get octant index of object within current node
+          // get octant index of object within current node
 
-					indexOctantLast = objectData.indexOctant;
+          indexOctantLast = objectData.indexOctant;
 
-					indexOctant = node.getOctantIndex( objectData );
+          indexOctant = node.getOctantIndex( objectData );
 
-					// if object octant index has changed
+          // if object octant index has changed
 
-					if ( indexOctant !== indexOctantLast ) {
+          if ( indexOctant !== indexOctantLast ) {
 
-						// add to update list
+            // add to update list
 
-						objectsUpdate.push( objectData );
+            objectsUpdate.push( objectData );
 
-					}
+          }
 
-				}
+        }
 
-			}
+      }
 
-			// update changed objects
+      // update changed objects
 
-			for ( i = 0, l = objectsUpdate.length; i < l; i ++ ) {
+      for ( i = 0, l = objectsUpdate.length; i < l; i ++ ) {
 
-				objectData = objectsUpdate[ i ];
+        objectData = objectsUpdate[ i ];
 
-				// remove object from current node
+        // remove object from current node
 
-				objectData.node.removeObject( objectData );
+        objectData.node.removeObject( objectData );
 
-				// add object to tree root
+        // add object to tree root
 
-				this.root.addObject( objectData );
+        this.root.addObject( objectData );
 
-			}
+      }
 
-		},
+    },
 
-		updateObject: function ( object ) {
+    updateObject: function ( object ) {
 
-			var i, l,
-				parentCascade = [ object ],
-				parent,
-				parentUpdate;
+      var i, l,
+      parentCascade = [ object ],
+        parent,
+        parentUpdate;
 
-			// search all parents between object and root for world matrix update
+        // search all parents between object and root for world matrix update
 
-			parent = object.parent;
+        parent = object.parent;
 
-			while ( parent ) {
+        while ( parent ) {
 
-				parentCascade.push( parent );
-				parent = parent.parent;
+          parentCascade.push( parent );
+          parent = parent.parent;
 
-			}
+        }
 
-			for ( i = 0, l = parentCascade.length; i < l; i ++ ) {
+        for ( i = 0, l = parentCascade.length; i < l; i ++ ) {
 
-				parent = parentCascade[ i ];
+          parent = parentCascade[ i ];
 
-				if ( parent.matrixWorldNeedsUpdate === true ) {
+          if ( parent.matrixWorldNeedsUpdate === true ) {
 
-					parentUpdate = parent;
+            parentUpdate = parent;
 
-				}
+          }
 
-			}
+        }
 
-			// update world matrix starting at uppermost parent that needs update
+        // update world matrix starting at uppermost parent that needs update
 
-			if ( typeof parentUpdate !== 'undefined' ) {
+        if ( typeof parentUpdate !== 'undefined' ) {
 
-				parentUpdate.updateMatrixWorld();
+          parentUpdate.updateMatrixWorld();
 
-			}
+        }
 
-		},
+    },
 
-		search: function ( position, radius, organizeByObject, direction ) {
+    search: function ( position, radius, organizeByObject, direction ) {
 
-			var i, l,
-				node,
-				objects,
-				objectData,
-				object,
-				results,
-				resultData,
-				resultsObjectsIndices,
-				resultObjectIndex,
-				directionPct;
+      var i, l,
+      node,
+      objects,
+      objectData,
+      object,
+      results,
+      resultData,
+      resultsObjectsIndices,
+      resultObjectIndex,
+      directionPct;
 
-			// add root objects
+      // add root objects
 
-			objects = [].concat( this.root.objects );
+      objects = [].concat( this.root.objects );
 
-			// ensure radius (i.e. distance of ray) is a number
+      // ensure radius (i.e. distance of ray) is a number
 
-			if ( ! ( radius > 0 ) ) {
+      if ( ! ( radius > 0 ) ) {
 
-				radius = Number.MAX_VALUE;
+        radius = Number.MAX_VALUE;
 
-			}
+      }
 
-			// if direction passed, normalize and find pct
+      // if direction passed, normalize and find pct
 
-			if ( direction instanceof THREE.Vector3 ) {
+      if ( direction instanceof THREE.Vector3 ) {
 
-				direction = this.utilVec31Search.copy( direction ).normalize();
-				directionPct = this.utilVec32Search.set( 1, 1, 1 ).divide( direction );
+        direction = this.utilVec31Search.copy( direction ).normalize();
+        directionPct = this.utilVec32Search.set( 1, 1, 1 ).divide( direction );
 
-			}
+      }
 
-			// search each node of root
+      // search each node of root
 
-			for ( i = 0, l = this.root.nodesIndices.length; i < l; i ++ ) {
+      for ( i = 0, l = this.root.nodesIndices.length; i < l; i ++ ) {
 
-				node = this.root.nodesByIndex[ this.root.nodesIndices[ i ] ];
+        node = this.root.nodesByIndex[ this.root.nodesIndices[ i ] ];
 
-				objects = node.search( position, radius, objects, direction, directionPct );
+        objects = node.search( position, radius, objects, direction, directionPct );
 
-			}
+      }
 
-			// if should organize results by object
+      // if should organize results by object
 
-			if ( organizeByObject === true ) {
+      if ( organizeByObject === true ) {
 
-				results = [];
-				resultsObjectsIndices = [];
+        results = [];
+        resultsObjectsIndices = [];
 
-				// for each object data found
+        // for each object data found
 
-				for ( i = 0, l = objects.length; i < l; i ++ ) {
+        for ( i = 0, l = objects.length; i < l; i ++ ) {
 
-					objectData = objects[ i ];
-					object = objectData.object;
+          objectData = objects[ i ];
+          object = objectData.object;
 
-					resultObjectIndex = indexOfValue( resultsObjectsIndices, object );
+          resultObjectIndex = indexOfValue( resultsObjectsIndices, object );
 
-					// if needed, create new result data
+          // if needed, create new result data
 
-					if ( resultObjectIndex === - 1 ) {
+          if ( resultObjectIndex === - 1 ) {
 
-						resultData = {
-							object: object,
-							faces: [],
-							vertices: []
-						};
+            resultData = {
+              object: object,
+              faces: [],
+              vertices: []
+            };
 
-						results.push( resultData );
+            results.push( resultData );
 
-						resultsObjectsIndices.push( object );
+            resultsObjectsIndices.push( object );
 
-					} else {
+          } else {
 
-						resultData = results[ resultObjectIndex ];
+            resultData = results[ resultObjectIndex ];
 
-					}
+          }
 
-					// object data has faces or vertices, add to list
+          // object data has faces or vertices, add to list
 
-					if ( objectData.faces ) {
+          if ( objectData.faces ) {
 
-						resultData.faces.push( objectData.faces );
+            resultData.faces.push( objectData.faces );
 
-					} else if ( objectData.vertices ) {
+          } else if ( objectData.vertices ) {
 
-						resultData.vertices.push( objectData.vertices );
+            resultData.vertices.push( objectData.vertices );
 
-					}
+          }
 
-				}
+        }
 
-			} else {
+      } else {
 
-				results = objects;
+        results = objects;
 
-			}
+      }
 
-			return results;
+      return results;
 
     },
 
@@ -577,161 +577,161 @@
 
     },
 
-		setRoot: function ( root ) {
+    setRoot: function ( root ) {
 
-			if ( root instanceof THREE.OctreeNode ) {
+      if ( root instanceof THREE.OctreeNode ) {
 
-				// store new root
+        // store new root
 
-				this.root = root;
+        this.root = root;
 
-				// update properties
+        // update properties
 
-				this.root.updateProperties();
+        this.root.updateProperties();
 
-			}
+      }
 
-		},
+    },
 
-		getDepthEnd: function () {
+    getDepthEnd: function () {
 
-			return this.root.getDepthEnd();
+      return this.root.getDepthEnd();
 
-		},
+    },
 
-		getNodeCountEnd: function () {
+    getNodeCountEnd: function () {
 
-			return this.root.getNodeCountEnd();
+      return this.root.getNodeCountEnd();
 
-		},
+    },
 
-		getObjectCountEnd: function () {
+    getObjectCountEnd: function () {
 
-			return this.root.getObjectCountEnd();
+      return this.root.getObjectCountEnd();
 
-		},
+    },
 
-		toConsole: function () {
+    toConsole: function () {
 
-			this.root.toConsole();
+      this.root.toConsole();
 
-		}
+    }
 
-	};
+  };
 
-	/*===================================================
+  /*===================================================
 
-	object data
+    object data
 
-	=====================================================*/
+    =====================================================*/
 
-	THREE.OctreeObjectData = function ( object, part ) {
+  THREE.OctreeObjectData = function ( object, part ) {
 
-		// properties
+    // properties
 
-		this.object = object;
+    this.object = object;
 
-		// handle part by type
+    // handle part by type
 
-		if ( part instanceof THREE.Face3 ) {
+    if ( part instanceof THREE.Face3 ) {
 
-			this.faces = part;
-			this.face3 = true;
-			this.utilVec31FaceBounds = new THREE.Vector3();
+      this.faces = part;
+      this.face3 = true;
+      this.utilVec31FaceBounds = new THREE.Vector3();
 
-		} else if ( part instanceof THREE.Vector3 ) {
+    } else if ( part instanceof THREE.Vector3 ) {
 
-			this.vertices = part;
+      this.vertices = part;
 
-		}
+    }
 
-		this.radius = 0;
-		this.position = new THREE.Vector3();
+    this.radius = 0;
+    this.position = new THREE.Vector3();
 
-		// initial update
+    // initial update
 
-		if ( this.object instanceof THREE.Object3D ) {
+    if ( this.object instanceof THREE.Object3D ) {
 
-			this.update();
+      this.update();
 
-		}
+    }
 
-		this.positionLast = this.position.clone();
+    this.positionLast = this.position.clone();
 
-	};
+  };
 
-	THREE.OctreeObjectData.prototype = {
+  THREE.OctreeObjectData.prototype = {
 
-		update: function () {
+    update: function () {
 
-			if ( this.face3 ) {
+      if ( this.face3 ) {
 
-				this.radius = this.getFace3BoundingRadius( this.object, this.faces );
-				this.position.copy( this.faces.centroid ).applyMatrix4( this.object.matrixWorld );
+        this.radius = this.getFace3BoundingRadius( this.object, this.faces );
+        this.position.copy( this.faces.centroid ).applyMatrix4( this.object.matrixWorld );
 
-			} else if ( this.vertices ) {
+      } else if ( this.vertices ) {
 
-				this.radius = this.object.material.size || 1;
-				this.position.copy( this.vertices ).applyMatrix4( this.object.matrixWorld );
+        this.radius = this.object.material.size || 1;
+        this.position.copy( this.vertices ).applyMatrix4( this.object.matrixWorld );
 
-			} else {
+      } else {
 
-				if ( this.object.geometry ) {
+        if ( this.object.geometry ) {
 
-					if ( this.object.geometry.boundingSphere === null ) {
+          if ( this.object.geometry.boundingSphere === null ) {
 
-						this.object.geometry.computeBoundingSphere();
+            this.object.geometry.computeBoundingSphere();
 
-					}
+          }
 
-					this.radius = this.object.geometry.boundingSphere.radius;
-					this.position.copy( this.object.geometry.boundingSphere.center ).applyMatrix4( this.object.matrixWorld );
+          this.radius = this.object.geometry.boundingSphere.radius;
+          this.position.copy( this.object.geometry.boundingSphere.center ).applyMatrix4( this.object.matrixWorld );
 
-				} else {
+        } else {
 
-					this.radius = this.object.boundRadius;
-					this.position.setFromMatrixPosition( this.object.matrixWorld );
+          this.radius = this.object.boundRadius;
+          this.position.setFromMatrixPosition( this.object.matrixWorld );
 
-				}
+        }
 
-			}
+      }
 
-			this.radius = this.radius * Math.max( this.object.scale.x, this.object.scale.y, this.object.scale.z );
+      this.radius = this.radius * Math.max( this.object.scale.x, this.object.scale.y, this.object.scale.z );
 
-		},
+    },
 
-		getFace3BoundingRadius: function ( object, face ) {
+    getFace3BoundingRadius: function ( object, face ) {
 
-			if ( face.centroid === undefined ) face.centroid = new THREE.Vector3();
+      if ( face.centroid === undefined ) face.centroid = new THREE.Vector3();
 
-			var geometry = object.geometry || object,
-				vertices = geometry.vertices,
-				centroid = face.centroid,
-				va = vertices[ face.a ], vb = vertices[ face.b ], vc = vertices[ face.c ],
-				centroidToVert = this.utilVec31FaceBounds,
-				radius;
+      var geometry = object.geometry || object,
+        vertices = geometry.vertices,
+          centroid = face.centroid,
+            va = vertices[ face.a ], vb = vertices[ face.b ], vc = vertices[ face.c ],
+              centroidToVert = this.utilVec31FaceBounds,
+                radius;
 
-			centroid.addVectors( va, vb ).add( vc ).divideScalar( 3 );
-			radius = Math.max( centroidToVert.subVectors( centroid, va ).length(), centroidToVert.subVectors( centroid, vb ).length(), centroidToVert.subVectors( centroid, vc ).length() );
+                centroid.addVectors( va, vb ).add( vc ).divideScalar( 3 );
+                radius = Math.max( centroidToVert.subVectors( centroid, va ).length(), centroidToVert.subVectors( centroid, vb ).length(), centroidToVert.subVectors( centroid, vc ).length() );
 
-			return radius;
+                return radius;
 
-		}
+    }
 
-	};
+  };
 
-	/*===================================================
+  /*===================================================
 
-	node
+    node
 
-	=====================================================*/
+    =====================================================*/
 
-	THREE.OctreeNode = function ( parameters ) {
+  THREE.OctreeNode = function ( parameters ) {
 
-		// utility
+    // utility
 
-		this.utilVec31Branch = new THREE.Vector3();
-		this.utilVec31Expand = new THREE.Vector3();
+    this.utilVec31Branch = new THREE.Vector3();
+    this.utilVec31Expand = new THREE.Vector3();
     this.utilVec31Ray = new THREE.Vector3();
 
     // level of detail
@@ -745,612 +745,612 @@
       chilrenSameLevelOfDetail: false
     };
 
-		// handle parameters
+    // handle parameters
 
-		parameters = parameters || {};
+    parameters = parameters || {};
 
-		// store or create tree
+    // store or create tree
 
-		if ( parameters.tree instanceof THREE.Octree ) {
+    if ( parameters.tree instanceof THREE.Octree ) {
 
-			this.tree = parameters.tree;
+      this.tree = parameters.tree;
 
-		} else if ( parameters.parent instanceof THREE.OctreeNode !== true ) {
+    } else if ( parameters.parent instanceof THREE.OctreeNode !== true ) {
 
-			parameters.root = this;
+      parameters.root = this;
 
-			this.tree = new THREE.Octree( parameters );
+      this.tree = new THREE.Octree( parameters );
 
-		}
+    }
 
-		// basic properties
+    // basic properties
 
-		this.id = this.tree.nodeCount ++;
-		this.position = parameters.position instanceof THREE.Vector3 ? parameters.position : new THREE.Vector3();
-		this.radius = parameters.radius > 0 ? parameters.radius : 1;
-		this.indexOctant = parameters.indexOctant;
-		this.depth = 0;
+    this.id = this.tree.nodeCount ++;
+    this.position = parameters.position instanceof THREE.Vector3 ? parameters.position : new THREE.Vector3();
+    this.radius = parameters.radius > 0 ? parameters.radius : 1;
+    this.indexOctant = parameters.indexOctant;
+    this.depth = 0;
 
-		// reset and assign parent
+    // reset and assign parent
 
-		this.reset();
-		this.setParent( parameters.parent );
+    this.reset();
+    this.setParent( parameters.parent );
 
-		// additional properties
+    // additional properties
 
-		this.overlap = this.radius * this.tree.overlapPct;
-		this.radiusOverlap = this.radius + this.overlap;
-		this.left = this.position.x - this.radiusOverlap;
-		this.right = this.position.x + this.radiusOverlap;
-		this.bottom = this.position.y - this.radiusOverlap;
-		this.top = this.position.y + this.radiusOverlap;
-		this.back = this.position.z - this.radiusOverlap;
-		this.front = this.position.z + this.radiusOverlap;
+    this.overlap = this.radius * this.tree.overlapPct;
+    this.radiusOverlap = this.radius + this.overlap;
+    this.left = this.position.x - this.radiusOverlap;
+    this.right = this.position.x + this.radiusOverlap;
+    this.bottom = this.position.y - this.radiusOverlap;
+    this.top = this.position.y + this.radiusOverlap;
+    this.back = this.position.z - this.radiusOverlap;
+    this.front = this.position.z + this.radiusOverlap;
 
-		// visual
+    // visual
 
-		if ( this.tree.scene ) {
+    if ( this.tree.scene ) {
 
-			this.visual = new THREE.Mesh( this.tree.visualGeometry, this.tree.visualMaterial );
-			this.visual.scale.set( this.radiusOverlap * 2, this.radiusOverlap * 2, this.radiusOverlap * 2 );
-			this.visual.position.copy( this.position );
-			this.tree.scene.add( this.visual );
+      this.visual = new THREE.Mesh( this.tree.visualGeometry, this.tree.visualMaterial );
+      this.visual.scale.set( this.radiusOverlap * 2, this.radiusOverlap * 2, this.radiusOverlap * 2 );
+      this.visual.position.copy( this.position );
+      this.tree.scene.add( this.visual );
 
-		}
+    }
 
-	};
+  };
 
-	THREE.OctreeNode.prototype = {
+  THREE.OctreeNode.prototype = {
 
-		setParent: function ( parent ) {
+    setParent: function ( parent ) {
 
-			// store new parent
+      // store new parent
 
-			if ( parent !== this && this.parent !== parent ) {
+      if ( parent !== this && this.parent !== parent ) {
 
-				this.parent = parent;
+        this.parent = parent;
 
-				// update properties
+        // update properties
 
-				this.updateProperties();
+        this.updateProperties();
 
-			}
+      }
 
-		},
+    },
 
-		updateProperties: function () {
+    updateProperties: function () {
 
-			var i, l;
+      var i, l;
 
-			// properties
+      // properties
 
-			if ( this.parent instanceof THREE.OctreeNode ) {
+      if ( this.parent instanceof THREE.OctreeNode ) {
 
-				this.tree = this.parent.tree;
-				this.depth = this.parent.depth + 1;
+        this.tree = this.parent.tree;
+        this.depth = this.parent.depth + 1;
 
-			} else {
+      } else {
 
-				this.depth = 0;
+        this.depth = 0;
 
-			}
+      }
 
-			// cascade
+      // cascade
 
-			for ( i = 0, l = this.nodesIndices.length; i < l; i ++ ) {
+      for ( i = 0, l = this.nodesIndices.length; i < l; i ++ ) {
 
-				this.nodesByIndex[ this.nodesIndices[ i ] ].updateProperties();
+        this.nodesByIndex[ this.nodesIndices[ i ] ].updateProperties();
 
-			}
+      }
 
-		},
+    },
 
-		reset: function ( cascade, removeVisual ) {
+    reset: function ( cascade, removeVisual ) {
 
-			var i, l,
-				node,
-				nodesIndices = this.nodesIndices || [],
-				nodesByIndex = this.nodesByIndex;
+      var i, l,
+      node,
+      nodesIndices = this.nodesIndices || [],
+        nodesByIndex = this.nodesByIndex;
 
-			this.objects = [];
-			this.nodesIndices = [];
-			this.nodesByIndex = {};
+        this.objects = [];
+        this.nodesIndices = [];
+        this.nodesByIndex = {};
 
-			// unset parent in nodes
+        // unset parent in nodes
 
-			for ( i = 0, l = nodesIndices.length; i < l; i ++ ) {
+        for ( i = 0, l = nodesIndices.length; i < l; i ++ ) {
 
-				node = nodesByIndex[ nodesIndices[ i ] ];
+          node = nodesByIndex[ nodesIndices[ i ] ];
 
-				node.setParent( undefined );
+          node.setParent( undefined );
 
-				if ( cascade === true ) {
+          if ( cascade === true ) {
 
-					node.reset( cascade, removeVisual );
+            node.reset( cascade, removeVisual );
 
-				}
+          }
 
-			}
+        }
 
-			// visual
+        // visual
 
-			if ( removeVisual === true && this.visual && this.visual.parent ) {
+        if ( removeVisual === true && this.visual && this.visual.parent ) {
 
-				this.visual.parent.remove( this.visual );
+          this.visual.parent.remove( this.visual );
 
-			}
+        }
 
-		},
+    },
 
-		addNode: function ( node, indexOctant ) {
+    addNode: function ( node, indexOctant ) {
 
-			node.indexOctant = indexOctant;
+      node.indexOctant = indexOctant;
 
-			if ( indexOfValue( this.nodesIndices, indexOctant ) === - 1 ) {
+      if ( indexOfValue( this.nodesIndices, indexOctant ) === - 1 ) {
 
-				this.nodesIndices.push( indexOctant );
+        this.nodesIndices.push( indexOctant );
 
-			}
+      }
 
-			this.nodesByIndex[ indexOctant ] = node;
+      this.nodesByIndex[ indexOctant ] = node;
 
-			if ( node.parent !== this ) {
+      if ( node.parent !== this ) {
 
-				node.setParent( this );
+        node.setParent( this );
 
-			}
+      }
 
-		},
+    },
 
-		removeNode: function ( indexOctant ) {
+    removeNode: function ( indexOctant ) {
 
-			var index,
-				node;
+      var index,
+      node;
 
-			index = indexOfValue( this.nodesIndices, indexOctant );
+      index = indexOfValue( this.nodesIndices, indexOctant );
 
-			this.nodesIndices.splice( index, 1 );
+      this.nodesIndices.splice( index, 1 );
 
-			node = node || this.nodesByIndex[ indexOctant ];
+      node = node || this.nodesByIndex[ indexOctant ];
 
-			delete this.nodesByIndex[ indexOctant ];
+      delete this.nodesByIndex[ indexOctant ];
 
-			if ( node.parent === this ) {
+      if ( node.parent === this ) {
 
-				node.setParent( undefined );
+        node.setParent( undefined );
 
-			}
+      }
 
-		},
+    },
 
-		addObject: function ( object ) {
+    addObject: function ( object ) {
 
-			var index,
-				indexOctant,
-				node;
+      var index,
+      indexOctant,
+      node;
 
-			// get object octant index
+      // get object octant index
 
-			indexOctant = this.getOctantIndex( object );
+      indexOctant = this.getOctantIndex( object );
 
-			// if object fully contained by an octant, add to subtree
-			if ( indexOctant > - 1 && this.nodesIndices.length > 0 ) {
+      // if object fully contained by an octant, add to subtree
+      if ( indexOctant > - 1 && this.nodesIndices.length > 0 ) {
 
-				node = this.branch( indexOctant );
+        node = this.branch( indexOctant );
 
-				node.addObject( object );
+        node.addObject( object );
 
-			} else if ( indexOctant < - 1 && this.parent instanceof THREE.OctreeNode ) {
+      } else if ( indexOctant < - 1 && this.parent instanceof THREE.OctreeNode ) {
 
-				// if object lies outside bounds, add to parent node
+        // if object lies outside bounds, add to parent node
 
-				this.parent.addObject( object );
+        this.parent.addObject( object );
 
-			} else {
+      } else {
 
-				// add to this objects list
+        // add to this objects list
 
-				index = indexOfValue( this.objects, object );
+        index = indexOfValue( this.objects, object );
 
-				if ( index === - 1 ) {
+        if ( index === - 1 ) {
 
-					this.objects.push( object );
+          this.objects.push( object );
 
-				}
+        }
 
-				// node reference
+        // node reference
 
-				object.node = this;
+        object.node = this;
 
-				// check if need to expand, split, or both
+        // check if need to expand, split, or both
 
-				this.checkGrow();
+        this.checkGrow();
 
-			}
+      }
 
-		},
+    },
 
-		addObjectWithoutCheck: function ( objects ) {
+    addObjectWithoutCheck: function ( objects ) {
 
-			var i, l,
-				object;
+      var i, l,
+      object;
 
-			for ( i = 0, l = objects.length; i < l; i ++ ) {
+      for ( i = 0, l = objects.length; i < l; i ++ ) {
 
-				object = objects[ i ];
+        object = objects[ i ];
 
-				this.objects.push( object );
+        this.objects.push( object );
 
-				object.node = this;
+        object.node = this;
 
-			}
+      }
 
-		},
+    },
 
-		removeObject: function ( object ) {
+    removeObject: function ( object ) {
 
-			var i, l,
-				nodesRemovedFrom,
-				removeData;
+      var i, l,
+      nodesRemovedFrom,
+      removeData;
 
-			// cascade through tree to find and remove object
+      // cascade through tree to find and remove object
 
-			removeData = this.removeObjectRecursive( object, { searchComplete: false, nodesRemovedFrom: [], objectsDataRemoved: [] } );
+      removeData = this.removeObjectRecursive( object, { searchComplete: false, nodesRemovedFrom: [], objectsDataRemoved: [] } );
 
-			// if object removed, try to shrink the nodes it was removed from
+      // if object removed, try to shrink the nodes it was removed from
 
-			nodesRemovedFrom = removeData.nodesRemovedFrom;
+      nodesRemovedFrom = removeData.nodesRemovedFrom;
 
-			if ( nodesRemovedFrom.length > 0 ) {
+      if ( nodesRemovedFrom.length > 0 ) {
 
-				for ( i = 0, l = nodesRemovedFrom.length; i < l; i ++ ) {
+        for ( i = 0, l = nodesRemovedFrom.length; i < l; i ++ ) {
 
-					nodesRemovedFrom[ i ].shrink();
+          nodesRemovedFrom[ i ].shrink();
 
-				}
+        }
 
-			}
+      }
 
-			return removeData.objectsDataRemoved;
+      return removeData.objectsDataRemoved;
 
-		},
+    },
 
-		removeObjectRecursive: function ( object, removeData ) {
+    removeObjectRecursive: function ( object, removeData ) {
 
-			var i, l,
-				index = - 1,
-				objectData,
-				node,
-				objectRemoved;
+      var i, l,
+      index = - 1,
+        objectData,
+        node,
+        objectRemoved;
 
-			// find index of object in objects list
+        // find index of object in objects list
 
-			// search and remove object data (fast)
-			if ( object instanceof THREE.OctreeObjectData ) {
+        // search and remove object data (fast)
+        if ( object instanceof THREE.OctreeObjectData ) {
 
-				// remove from this objects list
+          // remove from this objects list
 
-				index = indexOfValue( this.objects, object );
+          index = indexOfValue( this.objects, object );
 
-				if ( index !== - 1 ) {
+          if ( index !== - 1 ) {
 
-					this.objects.splice( index, 1 );
-					object.node = undefined;
+            this.objects.splice( index, 1 );
+            object.node = undefined;
 
-					removeData.objectsDataRemoved.push( object );
+            removeData.objectsDataRemoved.push( object );
 
-					removeData.searchComplete = objectRemoved = true;
+            removeData.searchComplete = objectRemoved = true;
 
-				}
+          }
 
-			} else {
+        } else {
 
-				// search each object data for object and remove (slow)
+          // search each object data for object and remove (slow)
 
-				for ( i = this.objects.length - 1; i >= 0; i -- ) {
+          for ( i = this.objects.length - 1; i >= 0; i -- ) {
 
-					objectData = this.objects[ i ];
+            objectData = this.objects[ i ];
 
-					if ( objectData.object === object ) {
+            if ( objectData.object === object ) {
 
-						this.objects.splice( i, 1 );
-						objectData.node = undefined;
+              this.objects.splice( i, 1 );
+              objectData.node = undefined;
 
-						removeData.objectsDataRemoved.push( objectData );
+              removeData.objectsDataRemoved.push( objectData );
 
-						objectRemoved = true;
+              objectRemoved = true;
 
-						if ( ! objectData.faces && ! objectData.vertices ) {
+              if ( ! objectData.faces && ! objectData.vertices ) {
 
-							removeData.searchComplete = true;
-							break;
+                removeData.searchComplete = true;
+                break;
 
-						}
+              }
 
-					}
+            }
 
-				}
+          }
 
-			}
+        }
 
-			// if object data removed and this is not on nodes removed from
+        // if object data removed and this is not on nodes removed from
 
-			if ( objectRemoved === true ) {
+        if ( objectRemoved === true ) {
 
-				removeData.nodesRemovedFrom.push( this );
+          removeData.nodesRemovedFrom.push( this );
 
-			}
+        }
 
-			// if search not complete, search nodes
+        // if search not complete, search nodes
 
-			if ( removeData.searchComplete !== true ) {
+        if ( removeData.searchComplete !== true ) {
 
-				for ( i = 0, l = this.nodesIndices.length; i < l; i ++ ) {
+          for ( i = 0, l = this.nodesIndices.length; i < l; i ++ ) {
 
-					node = this.nodesByIndex[ this.nodesIndices[ i ] ];
+            node = this.nodesByIndex[ this.nodesIndices[ i ] ];
 
-					// try removing object from node
+            // try removing object from node
 
-					removeData = node.removeObjectRecursive( object, removeData );
+            removeData = node.removeObjectRecursive( object, removeData );
 
-					if ( removeData.searchComplete === true ) {
+            if ( removeData.searchComplete === true ) {
 
-						break;
+              break;
 
-					}
+            }
 
-				}
+          }
 
-			}
+        }
 
-			return removeData;
+        return removeData;
 
-		},
+    },
 
-		checkGrow: function () {
+    checkGrow: function () {
 
-			// if object count above max
+      // if object count above max
 
-			if ( this.objects.length > this.tree.objectsThreshold && this.tree.objectsThreshold > 0 ) {
+      if ( this.objects.length > this.tree.objectsThreshold && this.tree.objectsThreshold > 0 ) {
 
-				this.grow();
+        this.grow();
 
-			}
+      }
 
-		},
+    },
 
-		grow: function () {
+    grow: function () {
 
-			var indexOctant,
-				object,
-				objectsExpand = [],
-				objectsExpandOctants = [],
-				objectsSplit = [],
-				objectsSplitOctants = [],
-				objectsRemaining = [],
-				i, l;
+      var indexOctant,
+      object,
+      objectsExpand = [],
+        objectsExpandOctants = [],
+          objectsSplit = [],
+            objectsSplitOctants = [],
+              objectsRemaining = [],
+                i, l;
 
-			// for each object
+                // for each object
 
-			for ( i = 0, l = this.objects.length; i < l; i ++ ) {
+                for ( i = 0, l = this.objects.length; i < l; i ++ ) {
 
-				object = this.objects[ i ];
+                  object = this.objects[ i ];
 
-				// get object octant index
+                  // get object octant index
 
-				indexOctant = this.getOctantIndex( object );
+                  indexOctant = this.getOctantIndex( object );
 
-				// if lies within octant
-				if ( indexOctant > - 1 ) {
+                  // if lies within octant
+                  if ( indexOctant > - 1 ) {
 
-					objectsSplit.push( object );
-					objectsSplitOctants.push( indexOctant );
+                    objectsSplit.push( object );
+                    objectsSplitOctants.push( indexOctant );
 
-				} else if ( indexOctant < - 1 ) {
+                  } else if ( indexOctant < - 1 ) {
 
-					// lies outside radius
+                    // lies outside radius
 
-					objectsExpand.push( object );
-					objectsExpandOctants.push( indexOctant );
+                    objectsExpand.push( object );
+                    objectsExpandOctants.push( indexOctant );
 
-				} else {
+                  } else {
 
-					// lies across bounds between octants
+                    // lies across bounds between octants
 
-					objectsRemaining.push( object );
+                    objectsRemaining.push( object );
 
-				}
+                  }
 
-			}
+                }
 
-			// if has objects to split
+                // if has objects to split
 
-			if ( objectsSplit.length > 0 ) {
+                if ( objectsSplit.length > 0 ) {
 
-				objectsRemaining = objectsRemaining.concat( this.split( objectsSplit, objectsSplitOctants ) );
+                  objectsRemaining = objectsRemaining.concat( this.split( objectsSplit, objectsSplitOctants ) );
 
-			}
+                }
 
-			// if has objects to expand
+                // if has objects to expand
 
-			if ( objectsExpand.length > 0 ) {
+                if ( objectsExpand.length > 0 ) {
 
-				objectsRemaining = objectsRemaining.concat( this.expand( objectsExpand, objectsExpandOctants ) );
+                  objectsRemaining = objectsRemaining.concat( this.expand( objectsExpand, objectsExpandOctants ) );
 
-			}
+                }
 
-			// store remaining
+                // store remaining
 
-			this.objects = objectsRemaining;
+                this.objects = objectsRemaining;
 
-			// merge check
+                // merge check
 
-			this.checkMerge();
+                this.checkMerge();
 
-		},
+    },
 
-		split: function ( objects, octants ) {
+    split: function ( objects, octants ) {
 
-			var i, l,
-				indexOctant,
-				object,
-				node,
-				objectsRemaining;
+      var i, l,
+      indexOctant,
+      object,
+      node,
+      objectsRemaining;
 
-			// if not at max depth
+      // if not at max depth
 
-			if ( this.depth < this.tree.depthMax ) {
+      if ( this.depth < this.tree.depthMax ) {
 
-				objects = objects || this.objects;
+        objects = objects || this.objects;
 
-				octants = octants || [];
+        octants = octants || [];
 
-				objectsRemaining = [];
+        objectsRemaining = [];
 
-				// for each object
+        // for each object
 
-				for ( i = 0, l = objects.length; i < l; i ++ ) {
+        for ( i = 0, l = objects.length; i < l; i ++ ) {
 
-					object = objects[ i ];
+          object = objects[ i ];
 
-					// get object octant index
+          // get object octant index
 
-					indexOctant = octants[ i ];
+          indexOctant = octants[ i ];
 
-					// if object contained by octant, branch this tree
+          // if object contained by octant, branch this tree
 
-					if ( indexOctant > - 1 ) {
+          if ( indexOctant > - 1 ) {
 
-						node = this.branch( indexOctant );
+            node = this.branch( indexOctant );
 
-						node.addObject( object );
+            node.addObject( object );
 
-					} else {
+          } else {
 
-						objectsRemaining.push( object );
+            objectsRemaining.push( object );
 
-					}
+          }
 
-				}
+        }
 
-				// if all objects, set remaining as new objects
+        // if all objects, set remaining as new objects
 
-				if ( objects === this.objects ) {
+        if ( objects === this.objects ) {
 
-					this.objects = objectsRemaining;
+          this.objects = objectsRemaining;
 
-				}
+        }
 
-			} else {
+      } else {
 
-				objectsRemaining = this.objects;
+        objectsRemaining = this.objects;
 
-			}
+      }
 
-			return objectsRemaining;
+      return objectsRemaining;
 
-		},
+    },
 
-		branch: function ( indexOctant ) {
+    branch: function ( indexOctant ) {
 
-			var node,
-				overlap,
-				radius,
-				radiusOffset,
-				offset,
-				position;
+      var node,
+      overlap,
+      radius,
+      radiusOffset,
+      offset,
+      position;
 
-			// node exists
+      // node exists
 
-			if ( this.nodesByIndex[ indexOctant ] instanceof THREE.OctreeNode ) {
+      if ( this.nodesByIndex[ indexOctant ] instanceof THREE.OctreeNode ) {
 
-				node = this.nodesByIndex[ indexOctant ];
+        node = this.nodesByIndex[ indexOctant ];
 
-			} else {
+      } else {
 
-				// properties
+        // properties
 
-				radius = ( this.radiusOverlap ) * 0.5;
-				overlap = radius * this.tree.overlapPct;
-				radiusOffset = radius - overlap;
-				offset = this.utilVec31Branch.set( indexOctant & 1 ? radiusOffset : - radiusOffset, indexOctant & 2 ? radiusOffset : - radiusOffset, indexOctant & 4 ? radiusOffset : - radiusOffset );
-				position = new THREE.Vector3().addVectors( this.position, offset );
+        radius = ( this.radiusOverlap ) * 0.5;
+        overlap = radius * this.tree.overlapPct;
+        radiusOffset = radius - overlap;
+        offset = this.utilVec31Branch.set( indexOctant & 1 ? radiusOffset : - radiusOffset, indexOctant & 2 ? radiusOffset : - radiusOffset, indexOctant & 4 ? radiusOffset : - radiusOffset );
+        position = new THREE.Vector3().addVectors( this.position, offset );
 
-				// node
+        // node
 
-				node = new THREE.OctreeNode( {
-					tree: this.tree,
-					parent: this,
-					position: position,
-					radius: radius,
-					indexOctant: indexOctant
-				} );
+        node = new THREE.OctreeNode( {
+          tree: this.tree,
+          parent: this,
+          position: position,
+          radius: radius,
+          indexOctant: indexOctant
+        } );
 
-				// store
+        // store
 
-				this.addNode( node, indexOctant );
+        this.addNode( node, indexOctant );
 
-			}
+      }
 
-			return node;
+      return node;
 
-		},
+    },
 
-		expand: function ( objects, octants ) {
+    expand: function ( objects, octants ) {
 
-			var i, l,
-				object,
-				objectsRemaining,
-				objectsExpand,
-				indexOctant,
-				flagsOutside,
-				indexOutside,
-				indexOctantInverse,
-				iom = this.tree.INDEX_OUTSIDE_MAP,
-				indexOutsideCounts,
-				infoIndexOutside1,
-				infoIndexOutside2,
-				infoIndexOutside3,
-				indexOutsideBitwise1,
-				indexOutsideBitwise2,
-				infoPotential1,
-				infoPotential2,
-				infoPotential3,
-				indexPotentialBitwise1,
-				indexPotentialBitwise2,
-				octantX, octantY, octantZ,
-				overlap,
-				radius,
-				radiusOffset,
-				radiusParent,
-				overlapParent,
-				offset = this.utilVec31Expand,
-				position,
-				parent;
+      var i, l,
+      object,
+      objectsRemaining,
+      objectsExpand,
+      indexOctant,
+      flagsOutside,
+      indexOutside,
+      indexOctantInverse,
+      iom = this.tree.INDEX_OUTSIDE_MAP,
+        indexOutsideCounts,
+        infoIndexOutside1,
+        infoIndexOutside2,
+        infoIndexOutside3,
+        indexOutsideBitwise1,
+        indexOutsideBitwise2,
+        infoPotential1,
+        infoPotential2,
+        infoPotential3,
+        indexPotentialBitwise1,
+        indexPotentialBitwise2,
+        octantX, octantY, octantZ,
+        overlap,
+        radius,
+        radiusOffset,
+        radiusParent,
+        overlapParent,
+        offset = this.utilVec31Expand,
+          position,
+          parent;
 
-			// handle max depth down tree
+          // handle max depth down tree
 
-			if ( this.tree.root.getDepthEnd() < this.tree.depthMax ) {
+          if ( this.tree.root.getDepthEnd() < this.tree.depthMax ) {
 
-				objects = objects || this.objects;
-				octants = octants || [];
+            objects = objects || this.objects;
+            octants = octants || [];
 
-				objectsRemaining = [];
-				objectsExpand = [];
+            objectsRemaining = [];
+            objectsExpand = [];
 
-				// reset counts
+            // reset counts
 
-				for ( i = 0, l = iom.length; i < l; i ++ ) {
+            for ( i = 0, l = iom.length; i < l; i ++ ) {
 
-					iom[ i ].count = 0;
+              iom[ i ].count = 0;
 
-				}
+            }
 
-				// for all outside objects, find outside octants containing most objects
+            // for all outside objects, find outside octants containing most objects
 
-				for ( i = 0, l = objects.length; i < l; i ++ ) {
+            for ( i = 0, l = objects.length; i < l; i ++ ) {
 
-					object = objects[ i ];
+              object = objects[ i ];
 
 					// get object octant index
 
@@ -2102,7 +2102,9 @@
         this.utilLevelOfDetail.chilrenSameLevelOfDetail = true;
 
         if (didLevelOfDetailChange) {
-          // callback to update the model?
+          // send the event to notify the object
+          // about its changed level of detail
+          this.dispatchEvent ( { type:'changedLevelOfDetail' } );
         }
 
       } else {
