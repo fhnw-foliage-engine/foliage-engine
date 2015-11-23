@@ -2123,7 +2123,7 @@
 		calculateDistance: function ( x1, y1, x2, y2) {
 			var a = Math.abs(x1 - x2);
 			var b = Math.abs(y1 - y2);
-			return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+			return Math.sqrt(a * a + b * b);
 		},
 
 		calculateLevelOfDetailFromDistance: function ( distance ) {
