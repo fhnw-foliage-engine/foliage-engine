@@ -2111,7 +2111,7 @@
 
     hasAllEdgesWithinSameLevelOfDetail: function ( fromPosition ) {
 
-      var levelOfDetail = this.calculateLevelOfDetail(fromPositon);
+      var levelOfDetail = this.calculateLevelOfDetail(fromPosition);
 
       var hasAllEdgesSameLevelOfDetail = levelOfDetail === undefined ? false : true;
 
