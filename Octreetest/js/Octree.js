@@ -67,6 +67,14 @@
 
   }
 
+  function prepareMarshall( array ){
+    var newArray = [];
+    for(var i = 0; i < array.length; i++){
+      newArray.push(array[i] * array[i]);
+    }
+    return newArray;
+  }
+
   /*===================================================
 
     octree
@@ -134,7 +142,7 @@
     this.objectsThreshold = isNumber( parameters.objectsThreshold ) ? parameters.objectsThreshold : 8;
     this.overlapPct = isNumber( parameters.overlapPct ) ? parameters.overlapPct : 0.15;
     this.undeferred = parameters.undeferred || false;
-    this.levelOfDetailRange = parameters.levelOfDetailRange || [1 ,5, 8, 50]
+    this.levelOfDetailRange = prepareMarshall( parameters.levelOfDetailRange ) || [1 ,25, 64, 2500]
     this.levelOfDetailChangedCallback = parameters.levelOfDetailChangedCallback || function () {};
 
     this.root = parameters.root instanceof THREE.OctreeNode ? parameters.root : new THREE.OctreeNode( parameters );
@@ -744,7 +752,7 @@
     this.utilLevelOfDetail = {
       // LOD of this node
       // if not undefined = -1
-      nodeLevelOfDetail: -1,
+      nodeLevelOfDetail: undefined,
       // all children have the same
       // LOD as it's parent (this node)
       chilrenSameLevelOfDetail: false
@@ -2067,33 +2075,25 @@
 
     },
 
+    // did Level of detail change
+    willLevelOfDetailChange: function ( from, to ) {
+      return from !== to || to !== undefined;
+    },
+
     // level of detail
-
-
     updateLevelOfDetail: function ( fromPosition ) {
-
-      var willLevelOfDetailChange = function (from, to) {
-        return from !== to || from === -1;
-      };
 
       if ( this.hasAllEdgesWithinSameLevelOfDetail ( fromPosition ) ) {
         var oldLevelOfDetail = this.utilLevelOfDetail.nodeLevelOfDetail;
         var newLevelOfDetail = this.calculateLevelOfDetail ( fromPosition );
-        var didLevelOfDetailChange = willLevelOfDetailChange( oldLevelOfDetail, newLevelOfDetail );
+        var didLevelOfDetailChange = this.willLevelOfDetailChange( oldLevelOfDetail, newLevelOfDetail );
 
         // we do not need to go any deeper -> all children will be in this LOD
         this.utilLevelOfDetail.nodeLevelOfDetail = newLevelOfDetail;
-        this.utilLevelOfDetail.chilrenSameLevelOfDetail = true;
 
         if (didLevelOfDetailChange) {
-          var event = {type: 'changed'};
-          this.dispatchEvent(event);
+          this.dispatchEvent();
 
-          for ( i = 0, l = this.nodesIndices.length; i < l; i ++ ) {
-
-          this.nodesByIndex[ this.nodesIndices[ i ] ].dispatchEvent(event);
-
-          }
         }
 
       } else {
@@ -2110,12 +2110,21 @@
 
 		},
 
-    dispatchEvent: function ( event ){
+    dispatchEvent: function (){
       var i, l;
 
       for(i = 0, l = this.objects.length; i < l; i++){
 
-        this.objects[i].object.dispatchEvent( event );
+        this.objects[i].object.dispatchEvent( {
+          type: 'changed',
+          level: this.utilLevelOfDetail.nodeLevelOfDetail
+        });
+
+      }
+
+      for ( i = 0, l = this.nodesIndices.length; i < l; i ++ ) {
+
+        this.nodesByIndex[ this.nodesIndices[ i ] ].dispatchEvent();
 
       }
 
@@ -2133,9 +2142,9 @@
     },
 
 		calculateDistance: function ( x1, y1, x2, y2) {
-			var a = Math.abs(x1 - x2);
-			var b = Math.abs(y1 - y2);
-			return Math.sqrt(a * a + b * b);
+			var a = x1 - x2;
+			var b = y1 - y2;
+			return a * a + b * b;
 		},
 
 		calculateLevelOfDetailFromDistance: function ( distance ) {
