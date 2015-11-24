@@ -2137,26 +2137,26 @@
 
 		calculateLevelOfDetail: function ( fromPosition ) {
 			var distanceFrontLeftEdge =
-        		this.calculateDistanceFromDistance(fromPosition.x, fromPosition.y, this.left, this.front);
+        		this.calculateDistance(fromPosition.x, fromPosition.y, this.left, this.front);
 
       		var distanceFrontRightEdge =
-        		this.calculateDistanceFromDistance(fromPosition.x, fromPosition.y, this.right, this.front);
+        		this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.front);
 
       		var distanceBackLeftEdge =
-      			this.calculateDistanceFromDistance(fromPosition.x, fromPosition.y, this.left, this.back);
+      			this.calculateDistance(fromPosition.x, fromPosition.y, this.left, this.back);
 
       		var distanceBackRightEdge =
-        		this.calculateDistanceFromDistance(fromPosition.x, fromPosition.y, this.right, this.back);
+        		this.calculateDistance(fromPosition.x, fromPosition.y, this.right, this.back);
 
    	    	console.log(distanceFrontLeftEdge);
-    		console.log(distanceFrontRightEdge);
+    		  console.log(distanceFrontRightEdge);
       		console.log(distanceBackLeftEdge);
       		console.log(distanceBackRightEdge);
 
-			var levelFrontLeftEdge = this.calculateLevelOfDetail(distanceFrontLeftEdge);
-			var levelFrontRightEdge = this.calculateLevelOfDetail(distanceFrontRightEdge);
-			var levelBackLeftEdge = this.calculateLevelOfDetail(distanceBackLeftEdge);
-			var levelBackRightEdge = this.calculateLevelOfDetail(distanceBackRightEdge);
+			var levelFrontLeftEdge = this.calculateLevelOfDetailFromDistance(distanceFrontLeftEdge);
+			var levelFrontRightEdge = this.calculateLevelOfDetailFromDistance(distanceFrontRightEdge);
+			var levelBackLeftEdge = this.calculateLevelOfDetailFromDistance(distanceBackLeftEdge);
+			var levelBackRightEdge = this.calculateLevelOfDetailFromDistance(distanceBackRightEdge);
 
 			var hasAllEdgesSameLevelOfDetail = levelFrontLeftEdge === levelFrontRightEdge &&
        			levelFrontRightEdge === levelBackLeftEdge &&
