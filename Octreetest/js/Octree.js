@@ -130,12 +130,12 @@
     this.objectsMap = {};
     this.objectsData = [];
     this.objectsDeferred = [];
-
     this.depthMax = isNumber( parameters.depthMax ) ? parameters.depthMax : Infinity;
     this.objectsThreshold = isNumber( parameters.objectsThreshold ) ? parameters.objectsThreshold : 8;
     this.overlapPct = isNumber( parameters.overlapPct ) ? parameters.overlapPct : 0.15;
     this.undeferred = parameters.undeferred || false;
     this.levelOfDetailRange = parameters.levelOfDetailRange || [1 ,5, 8, 50]
+    this.levelOfDetailChangedCallback = parameters.levelOfDetailChangedCallback || function () {};
 
     this.root = parameters.root instanceof THREE.OctreeNode ? parameters.root : new THREE.OctreeNode( parameters );
 
@@ -207,6 +207,10 @@
 
         object.uuid = THREE.Math.generateUUID();
 
+      }
+
+      if ( object instanceof THREE.Object3D ) {
+        object.addEventListener('changed', this.levelOfDetailChangedCallback);
       }
 
       if ( ! this.objectsMap[ object.uuid ] ) {
@@ -2072,13 +2076,6 @@
         return from !== to || from === -1;
       };
 
-      console.log(this.left);
-      console.log(this.right);
-      console.log(this.bottom);
-      console.log(this.top);
-      console.log(this.front);
-      console.log(this.back);
-
       if ( this.hasAllEdgesWithinSameLevelOfDetail ( fromPosition ) ) {
         var oldLevelOfDetail = this.utilLevelOfDetail.nodeLevelOfDetail;
         var newLevelOfDetail = this.calculateLevelOfDetail ( fromPosition );
@@ -2089,10 +2086,14 @@
         this.utilLevelOfDetail.chilrenSameLevelOfDetail = true;
 
         if (didLevelOfDetailChange) {
-          // send the event to notify the object
-          // about its changed level of detail
-          // this.dispatchEvent ( { type:'changedLevelOfDetail' } );
-          console.log("updated");
+          var event = {type: 'changed'};
+          this.dispatchEvent(event);
+
+          for ( i = 0, l = this.nodesIndices.length; i < l; i ++ ) {
+
+          this.nodesByIndex[ this.nodesIndices[ i ] ].dispatchEvent(event);
+
+          }
         }
 
       } else {
@@ -2108,6 +2109,17 @@
       }
 
 		},
+
+    dispatchEvent: function ( event ){
+      var i, l;
+
+      for(i = 0, l = this.objects.length; i < l; i++){
+
+        this.objects[i].object.dispatchEvent( event );
+
+      }
+
+    },
 
     hasAllEdgesWithinSameLevelOfDetail: function ( fromPosition ) {
 

@@ -36,7 +36,8 @@
 				searchMesh,
 				baseR = 255, baseG = 0, baseB = 255,
 				foundR = 0, foundG = 255, foundB = 0,
-				adding = true;
+				adding = true,
+				texture = THREE.ImageUtils.loadTexture( '../public/textures/grass.png' );
 
 			init();
 			animate();
@@ -48,6 +49,7 @@
 				scene = new THREE.Scene();
 
 				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, radius * 100 );
+				camera.position.y = 10000;  
 				scene.add( camera );
 
 				renderer = new THREE.WebGLRenderer();
@@ -70,18 +72,16 @@
 					// helps insert objects that lie over more than one node
 					overlapPct: 0.0,
 					// pass the scene to visualize the octree
-					scene: scene,
-          // ranges
-          levelOfDetailRange: [10000, 15000, 20000, 25000]
+					//scene: scene,
+          			// ranges
+          			levelOfDetailRange: [10000, 15000, 20000, 25000],
+
+ 					// callback for eventDispatcher
+					levelOfDetailChangedCallback: function () {
+						this.material.color.setRGB( baseR, baseG, baseB );
+						console.log("updated");
+					}
 				} );
-
-				// create object to show search radius and add to scene
-
-				searchMesh = new THREE.Mesh(
-					new THREE.SphereGeometry( radiusSearch ),
-					new THREE.MeshBasicMaterial( { color: 0x00FF00, transparent: true, opacity: 0.4 } )
-				);
-				scene.add( searchMesh );
 
 				// info
 
@@ -108,7 +108,7 @@
 
 				// search octree at random location
 
-				searchOctree();
+				//searchOctree();
 
 				// render results
 
@@ -133,23 +133,35 @@
 
 					// create new object
 
-					geometry = new THREE.CubeGeometry( 50, 50, 50 );
-					material = new THREE.MeshBasicMaterial();
-					material.color.setRGB( baseR, baseG, baseB );
-
-					mesh = new THREE.Mesh( geometry, material );
-
-					// give new object a random position in radius
-
-					mesh.position.set(
+					geometry = new THREE.Geometry();
+					geometry.dynamic = true;
+					geometry.vertices = [new THREE.Vector3(
 						Math.random() * radiusMax - radiusMaxHalf,
 						0,
 						Math.random() * radiusMax - radiusMaxHalf
-					);
+						)];
+
+					material = new THREE.PointsMaterial();
+  					material.map = texture;
+  					material.size = 500.0;
+  					material.sizeAuttenuation = true;
+  					material.transparent = true;
+
+					mesh = new THREE.Points( geometry, material );
+
+					//mesh.addEventListener('change', );
+
+					// give new object a random position in radius
+
+					/*mesh.position.set(
+						Math.random() * radiusMax - radiusMaxHalf,
+						0,
+						Math.random() * radiusMax - radiusMaxHalf
+					);*/
 
 					// add new object to octree and scene
 
-					octree.add( mesh );
+					octree.addDeferred( mesh );
 					scene.add( mesh );
 
 					// store object for later
@@ -204,7 +216,7 @@
 
 			}
 
-			function searchOctree() {
+			/*function searchOctree() {
 
 				var i, il;
 
@@ -219,7 +231,7 @@
 				// new search position
 				searchMesh.position.set(
 					Math.random() * radiusMax - radiusMaxHalf,
-          0,
+          			0,
 					Math.random() * radiusMax - radiusMaxHalf
 				);
 
@@ -256,7 +268,7 @@
 
 				*/
 
-			}
+			//}
 
 			function render() {
 
