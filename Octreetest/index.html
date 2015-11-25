@@ -137,9 +137,9 @@
 					geometry = new THREE.Geometry();
 					geometry.dynamic = true;
 					geometry.vertices = [new THREE.Vector3(
-						Math.random() * radiusMax - radiusMaxHalf,
+						Math.random() * radiusMax /*- radiusMaxHalf*/,
 						0,
-						Math.random() * radiusMax - radiusMaxHalf
+						Math.random() * radiusMax /*- radiusMaxHalf*/
 						)];
 
 					material = new THREE.PointsMaterial();
@@ -179,7 +179,7 @@
 
 				}
 				// else remove objects from octree
-				else {
+				else {/*
 
 					// get object
 
@@ -196,7 +196,7 @@
 
 						adding = true;
 
-					}
+					}*/
 
 				}
 
@@ -275,8 +275,8 @@
 
 				var timer = - Date.now() / 5000;
 
-				camera.position.x = Math.cos( timer ) * 10000;
-				camera.position.z = Math.sin( timer ) * 10000;
+				//camera.position.x = Math.cos( timer ) * 10000;
+				//camera.position.z = Math.sin( timer ) * 10000;
 				camera.lookAt( scene.position );
 
 				renderer.render( scene, camera );
