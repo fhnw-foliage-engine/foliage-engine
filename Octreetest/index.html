@@ -26,6 +26,8 @@
 				geometry,
 				material,
 				mesh,
+				bufferedGeometry,
+				vertices,
 				meshes = [],
 				meshesSearch = [],
 				meshCountMax = 1000,
@@ -39,8 +41,40 @@
 				adding = true,
 				texture = THREE.ImageUtils.loadTexture( '../public/textures/grass.png' );
 
+			material = new THREE.PointsMaterial();
+  					material.map = texture;
+  					material.size = 500.0;
+  					material.sizeAuttenuation = true;
+  					material.transparent = true;
+
+
+  			geometry = new THREE.Geometry();
+					geometry.dynamic = true;
+
 			init();
 			animate();
+
+			function convertVertexArrayToFloat32Array( array ) {
+				var returnValue = new Float32Array(array.length * 3)
+				for(var i = 0; i < array.length; i++){
+					returnValue[i*3] = array[i][0];
+					returnValue[i*3 + 1] = array[i][1];
+					returnValue[i*3 + 2] = array[i][2];
+				}
+				return returnValue;
+			}
+
+			function removeVertexFromBufferGeometry( vertex ) {
+				var i = 0;
+				var found = false;
+				while(i < vertices.length && !found){
+					if(vertex === vertices[i]){
+						vertices.splice(i, 1);
+						found = true;
+					}
+				}
+				return found;
+			}
 
 			function init() {
 
@@ -56,6 +90,24 @@
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
 				document.body.appendChild( renderer.domElement );
+
+				var anchorGeometry = new THREE.Geometry();
+				anchorGeometry.vertices.push(new THREE.Vector3(0,0,0), new THREE.Vector3(0,1000,0));
+
+				var anchorMaterial = new THREE.LineBasicMaterial();
+				anchorMaterial.linewidth = 1;
+				anchorMaterial.color = new THREE.Color( 0xffffff );
+
+				var anchor = new THREE.Line(anchorGeometry, anchorMaterial);
+
+				scene.add(anchor);
+
+				//bufferGeometry = new THREE.BufferGeometry();
+				//bufferGeometry.dynamic = true;
+
+				//var billboard = new THREE.Points(bufferGeometry, material);
+
+				//scene.add(billboard);
 
 				// create octree
 
@@ -74,13 +126,29 @@
 					// pass the scene to visualize the octree
 					//scene: scene,
           			// ranges
-          			levelOfDetailRange: [1500, 3000, 5500, 8000],
+          			levelOfDetailRange: [1000, 2000, 3000, 4000],
 
  					// callback for eventDispatcher
 					levelOfDetailChangedCallback: function ( event ) {
-						var color = 51 * (1 + event.level);
-						this.material.color.setRGB( color, baseG, baseB );
-						console.log("updated");
+						if(event.level >= 4){
+							/*this.material = undefined;
+							this.geometry = undefined;
+							vertices.push(this.position);
+							bufferGeometry.addAttribute( 'position', new THREE.BufferAttribute( convertVertexArrayToFloat32Array(vertices), 3 ) );
+							bufferGeometry.attributes.position.needsUpdate = true;*/
+							this.material.color.setRGB( 0, 0, 255 ); // Blau
+							console.log("updated LOD 4");
+						} else {
+							/*if(removeVertexFromBufferGeometry(this.position)){
+								this.material = material;
+								this.geometry = geometry;
+								this.geometry.vertices = this.position;
+								bufferGeometry.attributes.position.needsUpdate = true;
+							}
+							var color = 51 * (1 + event.level);*/
+							this.material.color.setRGB( 255, 0, 0 ); // Rot
+							console.log("updated LOD 0 - 3");
+						}
 					}
 				} );
 
@@ -121,7 +189,7 @@
 
         // update the level of details
 
-        var thePosition = {x: 0, y: 0};
+        var thePosition = {x: 0, z: 0};
         octree.updateLevelOfDetail(thePosition);
 
 			}
@@ -134,31 +202,31 @@
 
 					// create new object
 
-					geometry = new THREE.Geometry();
-					geometry.dynamic = true;
-					geometry.vertices = [new THREE.Vector3(
-						Math.random() * radiusMax /*- radiusMaxHalf*/,
-						0,
-						Math.random() * radiusMax /*- radiusMaxHalf*/
-						)];
-
 					material = new THREE.PointsMaterial();
   					material.map = texture;
   					material.size = 500.0;
   					material.sizeAuttenuation = true;
   					material.transparent = true;
 
-					mesh = new THREE.Points( geometry, material );
 
-					//mesh.addEventListener('change', );
+  					geometry = new THREE.Geometry();
+					geometry.dynamic = true;
+					
+
+					var pos = new THREE.Vector3(
+						Math.random() * radiusMax /*- radiusMaxHalf*/,
+						0,
+						Math.random() * radiusMax /*- radiusMaxHalf*/
+					);
+
+					geometry.vertices.push(pos);
+
+
+					mesh = new THREE.Points( geometry, material );
 
 					// give new object a random position in radius
 
-					/*mesh.position.set(
-						Math.random() * radiusMax - radiusMaxHalf,
-						0,
-						Math.random() * radiusMax - radiusMaxHalf
-					);*/
+					mesh.position.set(pos.x, pos.y, pos.z);
 
 					// add new object to octree and scene
 
@@ -275,8 +343,8 @@
 
 				var timer = - Date.now() / 5000;
 
-				//camera.position.x = Math.cos( timer ) * 10000;
-				//camera.position.z = Math.sin( timer ) * 10000;
+				camera.position.x = Math.cos( timer ) * 10000;
+				camera.position.z = Math.sin( timer ) * 10000;
 				camera.lookAt( scene.position );
 
 				renderer.render( scene, camera );
