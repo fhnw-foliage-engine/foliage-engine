@@ -142,8 +142,8 @@
     this.objectsThreshold = isNumber( parameters.objectsThreshold ) ? parameters.objectsThreshold : 8;
     this.overlapPct = isNumber( parameters.overlapPct ) ? parameters.overlapPct : 0.15;
     this.undeferred = parameters.undeferred || false;
-    this.levelOfDetailRange = prepareMarshall( parameters.levelOfDetailRange ) || [1 ,25, 64, 2500]
-    this.levelOfDetailChangedCallback = parameters.levelOfDetailChangedCallback || function () {};
+    this.levelOfDetailRange = prepareMarshall( parameters.levelOfDetailRange ) || [1 ,25, 64, 2500];
+    this.levelOfDetailChangedCallback = parameters.levelOfDetailChangedCallback || function ( Event ) {};
 
     this.root = parameters.root instanceof THREE.OctreeNode ? parameters.root : new THREE.OctreeNode( parameters );
 
