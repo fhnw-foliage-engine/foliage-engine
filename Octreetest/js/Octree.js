@@ -2099,11 +2099,24 @@
       } else {
 
         // we need to go deeper
-        var i, l;
-        for ( i = 0, l = this.nodesIndices.length; i < l; i ++ ) {
+        var i, l; l = this.nodesIndices.length;
+        if(l > 0){
+          for ( i = 0; i < l; i ++ ) {
 
-          this.nodesByIndex[ this.nodesIndices[ i ] ].updateLevelOfDetail( fromPosition );
+            this.nodesByIndex[ this.nodesIndices[ i ] ].updateLevelOfDetail( fromPosition );
 
+          }
+        } else {
+          var k = this.objects.length;
+          for(i = 0; i < k; i++) {
+            var obj = this.objects[i].object;
+            var dist = this.calculateDistance(obj.position.x, obj.position.z, fromPosition.x, fromPosition.z);
+            var lod = this.calculateLevelOfDetailFromDistance(dist);
+            obj.dispatchEvent( {
+                type: 'changed',
+                level: lod
+               });
+          }
         }
 
       }
