@@ -747,17 +747,6 @@
     this.utilVec31Expand = new THREE.Vector3();
     this.utilVec31Ray = new THREE.Vector3();
 
-    // level of detail
-
-    this.utilLevelOfDetail = {
-      // LOD of this node
-      // if not undefined = -1
-      nodeLevelOfDetail: undefined,
-      // all children have the same
-      // LOD as it's parent (this node)
-      chilrenSameLevelOfDetail: false
-    };
-
     // handle parameters
 
     parameters = parameters || {};
@@ -783,6 +772,7 @@
     this.radius = parameters.radius > 0 ? parameters.radius : 1;
     this.indexOctant = parameters.indexOctant;
     this.depth = 0;
+    this.levelOfDetail = parameters.levelOfDetail ? parameters.levelOfDetail : 0;
 
     // reset and assign parent
 
@@ -1296,7 +1286,8 @@
           parent: this,
           position: position,
           radius: radius,
-          indexOctant: indexOctant
+          indexOctant: indexOctant,
+          levelOfDetail: this.levelOfDetail
         } );
 
         // store
@@ -1500,7 +1491,8 @@
 					parent = new THREE.OctreeNode( {
 						tree: this.tree,
 						position: position,
-						radius: radiusParent
+						radius: radiusParent,
+            levelOfDetail: undefined
 					} );
 
 					// set self as node of parent
@@ -2077,19 +2069,19 @@
 
     // did Level of detail change
     willLevelOfDetailChange: function ( from, to ) {
-      return from !== to || to !== undefined;
+      return  true; //from !== to || to !== undefined;
     },
 
     // level of detail
     updateLevelOfDetail: function ( fromPosition ) {
 
       if ( this.hasAllEdgesWithinSameLevelOfDetail ( fromPosition ) ) {
-        var oldLevelOfDetail = this.utilLevelOfDetail.nodeLevelOfDetail;
+        var oldLevelOfDetail = this.levelOfDetail;
         var newLevelOfDetail = this.calculateLevelOfDetail ( fromPosition );
         var didLevelOfDetailChange = this.willLevelOfDetailChange( oldLevelOfDetail, newLevelOfDetail );
 
         // we do not need to go any deeper -> all children will be in this LOD
-        this.utilLevelOfDetail.nodeLevelOfDetail = newLevelOfDetail;
+        this.levelOfDetail = newLevelOfDetail;
 
         if (didLevelOfDetailChange) {
           this.dispatchEvent();
@@ -2130,7 +2122,7 @@
 
         this.objects[i].object.dispatchEvent( {
           type: 'changed',
-          level: this.utilLevelOfDetail.nodeLevelOfDetail
+          level: this.levelOfDetail
         });
 
       }
