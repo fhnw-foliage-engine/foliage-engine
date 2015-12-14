@@ -90,11 +90,12 @@
     </style>
 </head>
 <body>
-<script src="../bower_components/threejs/build/three.min.js"></script>
+<script src="../bower_components/threejs/build/three.js"></script>
 <script src="../bower_components/PointerLockControls/index.js"></script>
 <script src="../bower_components/stats.js/build/stats.min.js"></script>
 <script src="../bower_components/threex.rendererstats/threex.rendererstats.js"></script>
-<script src="../app/three.foliageengine.js"></script>
+<script src="../app/three.newFoliageengine.js"></script>
+<script src="../Octreetest/js/Octree.js"></script>
 
 <div id="blocker">
 
@@ -418,7 +419,7 @@
 
             controls.getObject().translateX(velocity.x);
             controls.getObject().translateZ(velocity.z);
-            controls.getObject().position.y = foliage.calculateHeight(controls.getObject().position.x, controls.getObject().position.z) + 1.8;
+            controls.getObject().position.y = 0 + 1.8;
 
             const padding = 2.5;
 
@@ -434,7 +435,7 @@
                 controls.getObject().position.z = skybox.position.z + (worldDepth / 2) - padding;
             }
 			
-            foliage.update(camera, delta);
+            //foliage.update(camera, delta);
         } else {
             controls.getObject().position.y = 20;
         }

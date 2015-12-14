@@ -51,6 +51,8 @@
   			geometry = new THREE.Geometry();
 					geometry.dynamic = true;
 
+			var thePosition = {x: 0, z: 0};
+
 			init();
 			animate();
 
@@ -115,7 +117,7 @@
 					// when undeferred = true, objects are inserted immediately
 					// instead of being deferred until next octree.update() call
 					// this may decrease performance as it forces a matrix update
-					undeferred: false,
+					undeferred: true,
 					// set the max depth of tree
 					depthMax: Infinity,
 					// max number of objects before nodes split or merge
@@ -199,10 +201,10 @@
 
 				octree.update();
 
-        // update the level of details
+        		// update the level of details
 
-        var thePosition = {x: 0, z: 0};
-        octree.updateLevelOfDetail(thePosition);
+        		
+        		
 
 			}
 
@@ -355,9 +357,15 @@
 
 				var timer = - Date.now() / 5000;
 
+				octree.updateLevelOfDetail(thePosition);
+        		thePosition.x += 1;
+        		thePosition.y += 1;
+
 				camera.position.x = Math.cos( timer ) * 10000;
 				camera.position.z = Math.sin( timer ) * 10000;
 				camera.lookAt( scene.position );
+
+
 
 				renderer.render( scene, camera );
 
