@@ -1,44 +1,59 @@
+//default constructor
 THREE.Foliage = function () {
 	new THREE.Foliage({});
 };
 
+//constructor with params
 THREE.Foliage = function (opts) {
 	THREE.Object3D.call(this);
 
+  //callback function when foliage is loaded
 	this.loadingDone = opts.callback !== undefined ? opts.callback : this.loadingDone;
+
+  //create terrain and foliage
 	this.createFoliage();
 
+  //call callback
 	this.loadingDone();
 }
 
+//construction and inheritation
 THREE.Foliage.prototype = Object.create(THREE.Object3D.prototype);
 THREE.Foliage.prototype.constructor = THREE.Foliage;
 
+//LOD Range and amount Definition
 THREE.Foliage.prototype.levelDefinition = [1, 7.5, 20, 50];
 
+//area width
 THREE.Foliage.prototype.width = 100;
 
+//area depth
 THREE.Foliage.prototype.depth = 100;
 
+//default loading done callback Function
 THREE.Foliage.prototype.loadingDone = function () { };
 
+//default level of detail despatch event callback function
 THREE.Foliage.prototype.levelOfDetailChangedCallback = function ( event ) { };
 
-/*THREE.Foliage.prototype.octree = new THREE.Octree( {
+//Octree used for the foliage
+THREE.Foliage.prototype.octree = new THREE.Octree( {
 	undeffered: false,
 	depthMax: Infinity,
 	objectsThreeshold: 8,
 	overlapPct: 0.0,
 	levelOfDetailRange: this.levelDefinition,
 	levelOfDetailChangedCallback: this.levelOfDetailChangedCallback
-} );*/
+} );
 
+//create default terrain
 THREE.Foliage.prototype.createTerrain = function (width, height) {
   var geometry = new THREE.PlaneGeometry(width, height, width, height);
   geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
   for (var i = 0; i < geometry.vertices.length; i++) {
     var x = geometry.vertices[i].x;
     var z = geometry.vertices[i].z;
+    //plain terrain
     geometry.vertices[i].y = 0;
   }
   // create the textureDiffuse
@@ -66,6 +81,7 @@ THREE.Foliage.prototype.createTerrain = function (width, height) {
   return terrain;
 };
 
+//create Foliage and default terrain
 THREE.Foliage.prototype.createFoliage = function() {
 	var terrain = this.createTerrain(this.width, this.depth);
 	this.add(terrain);
