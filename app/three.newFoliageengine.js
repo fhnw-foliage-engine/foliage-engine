@@ -92,17 +92,12 @@ THREE.Foliage.prototype.createFoliage = function() {
 
 THREE.Foliage.prototype.createRandomPosition = function () {
 
-  var avialableRange = {
-    width: this.width,
-    depth: this.depth
-  };
-
   var positions = [];
   var positionsNumber = 1000;
   for(var i = 0; i < positionsNumber; i++) {
     positions.push({
-      x: Math.random() * avialableRange.width,
-      y: Math.random() * avialableRange.depth
+      x: Math.random() * this.width,
+      y: Math.random() * this.depth
     });
   }
 
