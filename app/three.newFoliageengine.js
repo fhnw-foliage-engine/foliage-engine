@@ -103,3 +103,31 @@ THREE.Foliage.prototype.createRandomPosition = function () {
 
   return positions;
 };
+
+THREE.Foliage.prototype.models = [
+  // lod 0
+  [
+    '../app/models/grass/lod2/grass_0_single_grass_patch_lod2.js',
+    '../app/models/grass/lod2/grass_01_single_grass_patch_lod2.js',
+    '../app/models/grass/lod2/grass_03_single_grass_patch_lod2.js',
+    '../app/models/grass/lod2/grass_04_single_grass_patch_lod2.js'
+  ],
+  // lod 1
+  [
+    '../app/models/grass/lod3/grass_0_single_grass_patch_lod3.js',
+    '../app/models/grass/lod3/grass_01_single_grass_patch_lod3.js',
+    '../app/models/grass/lod3/grass_03_single_grass_patch_lod3.js',
+    '../app/models/grass/lod3/grass_04_single_grass_patch_lod3.js'
+  ],
+  // lod 2
+  [
+    '../app/models/grass/lod4/grass_0_single_grass_patch_lod4.js',
+    '../app/models/grass/lod4/grass_01_single_grass_patch_lod4.js',
+    '../app/models/grass/lod4/grass_03_single_grass_patch_lod4.js',
+    '../app/models/grass/lod4/grass_04_single_grass_patch_lod4.js'
+  ],
+  // lod 3
+  [
+    '../app/models/textures/grass.png',
+  ]
+];
