@@ -101,9 +101,5 @@ THREE.Foliage.prototype.createRandomPosition = function () {
     });
   }
 
-  // fixme: remove me :-(
-  console.log("Generated the following positions:");
-  console.log(positions);
-
   return positions;
 };
