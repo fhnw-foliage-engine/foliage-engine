@@ -10,6 +10,15 @@ THREE.Foliage = function (opts) {
   //callback function when foliage is loaded
 	this.loadingDone = opts.callback !== undefined ? opts.callback : this.loadingDone;
 
+  this.octree = new THREE.Octree({
+    undeffered: false,
+    depthMax: Infinity,
+    objectsThreeshold: 8,
+    overlapPct: 0.0,
+    levelOfDetailRange: this.levelDefinition,
+    levelOfDetailChangedCallback: this.levelOfDetailChangedCallback
+  });
+
   //create terrain and foliage
 	this.createFoliage();
 
@@ -35,18 +44,6 @@ THREE.Foliage.prototype.loadingDone = function () { };
 
 //default level of detail despatch event callback function
 THREE.Foliage.prototype.levelOfDetailChangedCallback = function ( event ) { };
-
-//Octree used for the foliage
-THREE.Foliage.prototype.octree = function () {
-  return new THREE.Octree({
-    undeffered: false,
-    depthMax: Infinity,
-    objectsThreeshold: 8,
-    overlapPct: 0.0,
-    levelOfDetailRange: this.levelDefinition,
-    levelOfDetailChangedCallback: this.levelOfDetailChangedCallback
-  });
-}
 
 //create default terrain
 THREE.Foliage.prototype.createTerrain = function (width, height) {
