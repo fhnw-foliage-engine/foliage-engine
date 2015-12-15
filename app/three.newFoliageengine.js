@@ -85,6 +85,30 @@ THREE.Foliage.prototype.createTerrain = function (width, height) {
 
 //create Foliage and default terrain
 THREE.Foliage.prototype.createFoliage = function() {
-	var terrain = this.createTerrain(this.width, this.depth);
+  var terrain = this.createTerrain(this.width, this.depth);
+  var positions = this.createRandomPosition();
 	this.add(terrain);
-}
+};
+
+THREE.Foliage.prototype.createRandomPosition = function () {
+
+  var avialableRange = {
+    width: this.width,
+    depth: this.depth
+  };
+
+  var positions = [];
+  var positionsNumber = 1000;
+  for(var i = 0; i < positionsNumber; i++) {
+    positions.push({
+      x: Math.random() * avialableRange.width,
+      y: Math.random() * avialableRange.depth
+    });
+  }
+
+  // fixme: remove me :-(
+  console.log("Generated the following positions:");
+  console.log(positions);
+
+  return positions;
+};
