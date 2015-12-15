@@ -86,7 +86,7 @@ THREE.Foliage.prototype.createFoliage = function() {
   var positions = this.createRandomPosition();
   for(var i = 0; i < positions.length; i++){
     var obj = new THREE.Object3D();
-    obj.position = new THREE.Vector3(positons[i].x, 0, positons[i].z);
+    obj.position = new THREE.Vector3(positions[i].x, 0, positions[i].z);
     this.octree.addDeferred(obj);
   }
   
