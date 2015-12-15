@@ -37,14 +37,16 @@ THREE.Foliage.prototype.loadingDone = function () { };
 THREE.Foliage.prototype.levelOfDetailChangedCallback = function ( event ) { };
 
 //Octree used for the foliage
-THREE.Foliage.prototype.octree = new THREE.Octree( {
-	undeffered: false,
-	depthMax: Infinity,
-	objectsThreeshold: 8,
-	overlapPct: 0.0,
-	levelOfDetailRange: this.levelDefinition,
-	levelOfDetailChangedCallback: this.levelOfDetailChangedCallback
-} );
+THREE.Foliage.prototype.octree = function () {
+  return new THREE.Octree({
+    undeffered: false,
+    depthMax: Infinity,
+    objectsThreeshold: 8,
+    overlapPct: 0.0,
+    levelOfDetailRange: this.levelDefinition,
+    levelOfDetailChangedCallback: this.levelOfDetailChangedCallback
+  });
+}
 
 //create default terrain
 THREE.Foliage.prototype.createTerrain = function (width, height) {
