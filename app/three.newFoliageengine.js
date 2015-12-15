@@ -112,7 +112,7 @@ THREE.Foliage.prototype.models = [
     '../app/models/grass/lod2/grass_03_single_grass_patch_lod2.js',
     '../app/models/grass/lod2/grass_04_single_grass_patch_lod2.js'
   ],
-  // lod 1
+  // lod 2
   [
     '../app/models/grass/lod3/grass_0_single_grass_patch_lod3.js',
     '../app/models/grass/lod3/grass_01_single_grass_patch_lod3.js',
