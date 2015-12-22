@@ -129,8 +129,8 @@
 
     var foliage, skybox, light;
 
-    const worldWidth = 50;
-    const worldDepth = 50;
+    const worldWidth = 100;
+    const worldDepth = 100;
 
 
     // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
@@ -357,6 +357,7 @@
         foliage = new THREE.Foliage({
             width: worldWidth,
             depth: worldDepth,
+            scene: scene,
             callback: function () {
                 loading.style.display = "none";
                 instructions.style.display = '-webkit-box';
@@ -423,7 +424,7 @@
 
             const padding = 2.5;
 
-            if (controls.getObject().position.x < skybox.position.x - (worldWidth / 2) + padding) {
+            /*if (controls.getObject().position.x < skybox.position.x - (worldWidth / 2) + padding) {
                 controls.getObject().position.x = skybox.position.x - (worldWidth / 2) + padding;
             } else if (controls.getObject().position.x > skybox.position.x + (worldWidth / 2) - padding) {
                 controls.getObject().position.x = skybox.position.x + (worldWidth / 2) - padding;
@@ -433,9 +434,9 @@
                 controls.getObject().position.z = skybox.position.z - (worldDepth / 2) + padding;
             } else if (controls.getObject().position.z > skybox.position.z + (worldDepth / 2) - padding) {
                 controls.getObject().position.z = skybox.position.z + (worldDepth / 2) - padding;
-            }
+            }*/
 			
-            //foliage.update(camera, delta);
+            foliage.update(controls.getObject());
         } else {
             controls.getObject().position.y = 20;
         }

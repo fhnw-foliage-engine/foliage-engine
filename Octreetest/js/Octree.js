@@ -189,6 +189,10 @@
 
       }
 
+      if ( object instanceof THREE.Object3D ) {
+        object.addEventListener('changed', this.levelOfDetailChangedCallback);
+      }
+
     },
 
     addDeferred: function ( object, options ) {
@@ -202,7 +206,7 @@
       objectData;
 
       // ensure object is not object data
-
+      //debugger;
       if ( object instanceof THREE.OctreeObjectData ) {
 
         object = object.object;
@@ -270,7 +274,7 @@
     },
 
     addObjectData: function ( object, part ) {
-
+      //debugger;
       var objectData = new THREE.OctreeObjectData( object, part );
 
       // add to tree objects data list
@@ -660,6 +664,7 @@
 
     this.radius = 0;
     this.position = new THREE.Vector3();
+    //this.position = object.position;
 
     // initial update
 
@@ -704,6 +709,7 @@
 
           this.radius = this.object.boundRadius;
           this.position.setFromMatrixPosition( this.object.matrixWorld );
+          //this.position = this.object.position;
 
         }
 
@@ -742,7 +748,6 @@
   THREE.OctreeNode = function ( parameters ) {
 
     // utility
-
     this.utilVec31Branch = new THREE.Vector3();
     this.utilVec31Expand = new THREE.Vector3();
     this.utilVec31Ray = new THREE.Vector3();
@@ -766,7 +771,7 @@
     }
 
     // basic properties
-
+    //debugger;
     this.id = this.tree.nodeCount ++;
     this.position = parameters.position instanceof THREE.Vector3 ? parameters.position : new THREE.Vector3();
     this.radius = parameters.radius > 0 ? parameters.radius : 1;
@@ -1281,6 +1286,7 @@
 
         // node
 
+        //debugger;
         node = new THREE.OctreeNode( {
           tree: this.tree,
           parent: this,
@@ -1289,7 +1295,7 @@
           indexOctant: indexOctant,
           levelOfDetail: this.levelOfDetail
         } );
-
+        //debugger;
         // store
 
         this.addNode( node, indexOctant );
@@ -1494,7 +1500,7 @@
 						radius: radiusParent,
             levelOfDetail: undefined
 					} );
-
+          //debugger;
 					// set self as node of parent
 
 					parent.addNode( this, indexOctantInverse );
@@ -2104,6 +2110,7 @@
             var obj = this.objects[i].object;
             var dist = this.calculateDistance(obj.position.x, obj.position.z, fromPosition.x, fromPosition.z);
             var lod = this.calculateLevelOfDetailFromDistance(dist);
+            console.log("calculated distance: " + dist + ", calculated lod: " + lod);
             obj.dispatchEvent( {
                 type: 'changed',
                 level: lod
@@ -2141,7 +2148,6 @@
 
       var hasAllEdgesSameLevelOfDetail = levelOfDetail === undefined ? false : true;
 
-      console.log(hasAllEdgesSameLevelOfDetail);
       return hasAllEdgesSameLevelOfDetail;
 
     },
@@ -2180,11 +2186,6 @@
 			var levelFrontRightEdge = this.calculateLevelOfDetailFromDistance(distanceFrontRightEdge);
 			var levelBackLeftEdge = this.calculateLevelOfDetailFromDistance(distanceBackLeftEdge);
 			var levelBackRightEdge = this.calculateLevelOfDetailFromDistance(distanceBackRightEdge);
-
-      console.log(levelFrontLeftEdge);
-      console.log(levelFrontRightEdge);
-      console.log(levelBackLeftEdge);
-      console.log(levelBackRightEdge);
 
 			var hasAllEdgesSameLevelOfDetail = levelFrontLeftEdge === levelFrontRightEdge &&
        			levelFrontRightEdge === levelBackLeftEdge &&
