@@ -142,7 +142,7 @@
     this.objectsThreshold = isNumber( parameters.objectsThreshold ) ? parameters.objectsThreshold : 8;
     this.overlapPct = isNumber( parameters.overlapPct ) ? parameters.overlapPct : 0.15;
     this.undeferred = parameters.undeferred || false;
-    this.levelOfDetailRange = prepareMarshall( parameters.levelOfDetailRange ) || [1 ,25, 64, 2500];
+    this.levelOfDetailRange = prepareMarshall( parameters.levelOfDetailRange ) // required parameter
     this.levelOfDetailChangedCallback = parameters.levelOfDetailChangedCallback || function ( Event ) {};
 
     this.root = parameters.root instanceof THREE.OctreeNode ? parameters.root : new THREE.OctreeNode( parameters );
@@ -2161,31 +2161,30 @@
 		calculateLevelOfDetailFromDistance: function ( distance ) {
 			var i, l;
 			l = this.tree.levelOfDetailRange;
-			for(i = 0; i < l.length; i++){
-				if(distance <=  l[i]) return i;
+      for(i = 0; i < l.length; i++){
+        var levelOfDetailManhattan = l[i]
+				if(distance <=  levelOfDetailManhattan) return i;
 			}
 			return i;
 		},
 
 		calculateLevelOfDetail: function ( fromPosition ) {
 			var distanceFrontLeftEdge =
-        		this.calculateDistance(fromPosition.x, fromPosition.z, this.left, this.front);
+        this.calculateDistance(fromPosition.x, fromPosition.z, this.left, this.front);
 
-      		var distanceFrontRightEdge =
-        		this.calculateDistance(fromPosition.x, fromPosition.z, this.right, this.front);
+      var distanceFrontRightEdge =
+        this.calculateDistance(fromPosition.x, fromPosition.z, this.right, this.front);
 
-      		var distanceBackLeftEdge =
-      			this.calculateDistance(fromPosition.x, fromPosition.z, this.left, this.back);
+      var distanceBackLeftEdge =
+        this.calculateDistance(fromPosition.x, fromPosition.z, this.left, this.back);
 
-      		var distanceBackRightEdge =
-        		this.calculateDistance(fromPosition.x, fromPosition.z, this.right, this.back);
-
-   	    	
+      var distanceBackRightEdge =
+        this.calculateDistance(fromPosition.x, fromPosition.z, this.right, this.back);
 
 			var levelFrontLeftEdge = this.calculateLevelOfDetailFromDistance(distanceFrontLeftEdge);
 			var levelFrontRightEdge = this.calculateLevelOfDetailFromDistance(distanceFrontRightEdge);
 			var levelBackLeftEdge = this.calculateLevelOfDetailFromDistance(distanceBackLeftEdge);
-			var levelBackRightEdge = this.calculateLevelOfDetailFromDistance(distanceBackRightEdge);
+      var levelBackRightEdge = this.calculateLevelOfDetailFromDistance(distanceBackRightEdge);
 
 			var hasAllEdgesSameLevelOfDetail = levelFrontLeftEdge === levelFrontRightEdge &&
        			levelFrontRightEdge === levelBackLeftEdge &&

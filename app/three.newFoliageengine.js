@@ -42,7 +42,7 @@ THREE.Foliage.prototype = Object.create(THREE.Object3D.prototype);
 THREE.Foliage.prototype.constructor = THREE.Foliage;
 
 //LOD Range and amount Definition
-THREE.Foliage.prototype.levelDefinition = [1, 7.5, 20, 50];
+THREE.Foliage.prototype.levelDefinition = [40, 80, 160, 150];
 
 //area width
 THREE.Foliage.prototype.width = 100;
@@ -60,25 +60,21 @@ THREE.Foliage.prototype.loadingDone = function () { };
 THREE.Foliage.prototype.levelOfDetailChangedCallback = function (event) {
     if (event.level >= 4) {
         //LOD 4
-        debugger;
         billboardPositions[billboardMap.get(this.uuid)] = undefined;
         billboardPositions[billboardMap.get(this.uuid) + 1] = undefined;
         billboardPositions[billboardMap.get(this.uuid) + 2] = undefined;
     } else if (event.level == 3) {
         //LOD 3
-        debugger;
         billboardPositions[billboardMap.get(this.uuid)] = undefined;
         billboardPositions[billboardMap.get(this.uuid) + 1] = undefined;
         billboardPositions[billboardMap.get(this.uuid) + 2] = undefined;
     } else if (event.level == 2) {
         //LOD 2
-        debugger;
         billboardPositions[billboardMap.get(this.uuid)] = undefined;
         billboardPositions[billboardMap.get(this.uuid) + 1] = undefined;
         billboardPositions[billboardMap.get(this.uuid) + 2] = undefined;
     } else if (event.level == 1) {
         //LOD 1
-        debugger;
         billboardPositions[billboardMap.get(this.uuid)] = undefined;
         billboardPositions[billboardMap.get(this.uuid) + 1] = undefined;
         billboardPositions[billboardMap.get(this.uuid) + 2] = undefined;
@@ -195,7 +191,6 @@ THREE.Foliage.prototype.update = function ( control ) {
     //console.log(control.position);
     this.octree.updateLevelOfDetail(control.position);
     this.pointsGeometry.attributes.position.needsUpdate = true;
-    console.log("updated");
 }
 
 //array with modelspath for each LOD
