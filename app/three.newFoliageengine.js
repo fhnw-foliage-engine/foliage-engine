@@ -193,9 +193,9 @@ THREE.Foliage.prototype.createRandomPosition = function () {
 THREE.Foliage.prototype.update = function ( control ) {
     //TODO update position for LOD and other funny stuff...
     //console.log(control.position);
-    this.octree.updateLevelOfDetail(camera.position);
+    this.octree.updateLevelOfDetail(control.position);
     this.pointsGeometry.attributes.position.needsUpdate = true;
-    //console.log("updated");
+    console.log("updated");
 }
 
 //array with modelspath for each LOD
