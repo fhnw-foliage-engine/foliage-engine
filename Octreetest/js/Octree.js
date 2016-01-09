@@ -2113,7 +2113,8 @@
             console.log("calculated distance: " + dist + ", calculated lod: " + lod);
             obj.dispatchEvent( {
                 type: 'changed',
-                level: lod
+                level: lod,
+                target: obj
                });
           }
         }
@@ -2129,7 +2130,8 @@
 
         this.objects[i].object.dispatchEvent( {
           type: 'changed',
-          level: this.levelOfDetail
+          level: this.levelOfDetail,
+          target: this.objects[i].object
         });
 
       }
@@ -2180,6 +2182,12 @@
 
       var distanceBackRightEdge =
         this.calculateDistance(fromPosition.x, fromPosition.z, this.right, this.back);
+
+      console.log("################################################");
+      console.log(distanceFrontLeftEdge);
+      console.log(distanceFrontRightEdge);
+      console.log(distanceBackLeftEdge);
+      console.log(distanceBackRightEdge);
 
 			var levelFrontLeftEdge = this.calculateLevelOfDetailFromDistance(distanceFrontLeftEdge);
 			var levelFrontRightEdge = this.calculateLevelOfDetailFromDistance(distanceFrontRightEdge);

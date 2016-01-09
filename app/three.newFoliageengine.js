@@ -1,5 +1,6 @@
 //global variables
 var billboardMap, billboardPositions;
+var foliageCall;
 
 //default constructor
 THREE.Foliage = function () {
@@ -9,13 +10,14 @@ THREE.Foliage = function () {
 //constructor with params
 THREE.Foliage = function (opts) {
     THREE.Object3D.call(this);
+    foliageCall = this;
 
     //callback function when foliage is loaded
     this.loadingDone = opts.callback !== undefined ? opts.callback : this.loadingDone;
     //set custom mapsize
     this.width = opts.width !== undefined ? opts.width : this.width;
     this.depth = opts.depth !== undefined ? opts.depth : this.depth;
-    this.positionAmount = this.width * this.depth / 2;
+    this.positionAmount = this.width * this.depth / 2 /100;
     //set scene for octree debugging
     this.scene = opts.scene;
 
@@ -42,7 +44,7 @@ THREE.Foliage.prototype = Object.create(THREE.Object3D.prototype);
 THREE.Foliage.prototype.constructor = THREE.Foliage;
 
 //LOD Range and amount Definition
-THREE.Foliage.prototype.levelDefinition = [40, 80, 160, 150];
+THREE.Foliage.prototype.levelDefinition = [20, 40, 80, 120];
 
 //area width
 THREE.Foliage.prototype.width = 100;
@@ -60,29 +62,50 @@ THREE.Foliage.prototype.loadingDone = function () { };
 THREE.Foliage.prototype.levelOfDetailChangedCallback = function (event) {
     if (event.level >= 4) {
         //LOD 4
-        billboardPositions[billboardMap.get(this.uuid)] = undefined;
-        billboardPositions[billboardMap.get(this.uuid) + 1] = undefined;
-        billboardPositions[billboardMap.get(this.uuid) + 2] = undefined;
+        var removable = foliageCall.getObjectByName(event.target.uuid);
+        foliageCall.remove(removable);
+        removable = null;
+        billboardPositions[billboardMap.get(event.target.uuid)] = event.target.position.x;
+        billboardPositions[billboardMap.get(event.target.uuid) + 1] = event.target.position.y + 0.5;
+        billboardPositions[billboardMap.get(event.target.uuid) + 2] = event.target.position.z;
     } else if (event.level == 3) {
         //LOD 3
-        billboardPositions[billboardMap.get(this.uuid)] = undefined;
-        billboardPositions[billboardMap.get(this.uuid) + 1] = undefined;
-        billboardPositions[billboardMap.get(this.uuid) + 2] = undefined;
+        var removable = foliageCall.getObjectByName(event.target.uuid);
+        foliageCall.remove(removable);
+        removable = null;
+        billboardPositions[billboardMap.get(event.target.uuid)] = undefined;
+        billboardPositions[billboardMap.get(event.target.uuid) + 1] = undefined;
+        billboardPositions[billboardMap.get(event.target.uuid) + 2] = undefined;
     } else if (event.level == 2) {
         //LOD 2
-        billboardPositions[billboardMap.get(this.uuid)] = undefined;
-        billboardPositions[billboardMap.get(this.uuid) + 1] = undefined;
-        billboardPositions[billboardMap.get(this.uuid) + 2] = undefined;
+        var removable = foliageCall.getObjectByName(event.target.uuid);
+        foliageCall.remove(removable);
+        removable = null;
+        billboardPositions[billboardMap.get(event.target.uuid)] = undefined;
+        billboardPositions[billboardMap.get(event.target.uuid) + 1] = undefined;
+        billboardPositions[billboardMap.get(event.target.uuid) + 2] = undefined;
     } else if (event.level == 1) {
         //LOD 1
-        billboardPositions[billboardMap.get(this.uuid)] = undefined;
-        billboardPositions[billboardMap.get(this.uuid) + 1] = undefined;
-        billboardPositions[billboardMap.get(this.uuid) + 2] = undefined;
+        var removable = foliageCall.getObjectByName(event.target.uuid);
+        foliageCall.remove(removable);
+        removable = null;
+        billboardPositions[billboardMap.get(event.target.uuid)] = undefined;
+        billboardPositions[billboardMap.get(event.target.uuid) + 1] = undefined;
+        billboardPositions[billboardMap.get(event.target.uuid) + 2] = undefined;
     } else if (event.level == 0) {
-        //LOD 0
-        billboardPositions[billboardMap.get(this.uuid)] = this.position.x;
-        billboardPositions[billboardMap.get(this.uuid) + 1] = this.position.y + 0.5;
-        billboardPositions[billboardMap.get(this.uuid) + 2] = this.position.z;
+        //LOD
+        var removable = foliageCall.getObjectByName(event.target.uuid);
+        foliageCall.remove(removable);
+        removable = null;
+        var mesh = foliageCall.lodTemplates[event.level].meshes[0].clone();
+        mesh.name = event.target.uuid;
+        mesh.position.x = event.target.position.x;
+        mesh.position.y = event.target.position.y + 0.5;
+        mesh.position.z = event.target.position.z;
+        foliageCall.add(mesh);
+        billboardPositions[billboardMap.get(event.target.uuid)] = undefined;
+        billboardPositions[billboardMap.get(event.target.uuid) + 1] = undefined;
+        billboardPositions[billboardMap.get(event.target.uuid) + 2] = undefined;
     } else {
         console.log("updated LOD undefined");
     }
@@ -142,6 +165,18 @@ THREE.Foliage.prototype.createFoliage = function () {
     }
     this.octree.update();
     //end octree
+
+    //load 3D Models
+    for(var i = 0; i < this.models.length - 1; i++) {
+        var models = this.models[i];
+        this.lodTemplates.push(null);
+        if(models){
+            for(var j = 0; j < models.length; j++){
+                this.handle3DLevel(models[j], j, i);
+            }
+        }
+    }
+    //end 3D Models
 
     //create Billboard
     this.pointsGeometry = new THREE.BufferGeometry();
@@ -209,15 +244,82 @@ THREE.Foliage.prototype.models = [
         '../app/models/grass/lod3/grass_03_single_grass_patch_lod3.js',
         '../app/models/grass/lod3/grass_04_single_grass_patch_lod3.js'
     ],
-    // lod 2
+    // lod 3
     [
         '../app/models/grass/lod4/grass_0_single_grass_patch_lod4.js',
         '../app/models/grass/lod4/grass_01_single_grass_patch_lod4.js',
         '../app/models/grass/lod4/grass_03_single_grass_patch_lod4.js',
         '../app/models/grass/lod4/grass_04_single_grass_patch_lod4.js'
     ],
-    // lod 3
+    // lod 4
     [
         '../app/models/textures/grass.png',
     ]
 ];
+
+THREE.Foliage.prototype.handle3DLevel = function (modelURL, modelIdx, level) {
+  if (!this.loader) {
+    this.loader = new THREE.JSONLoader();
+  }
+  this.loader.load(modelURL, this.modelLoaded(level, modelIdx));
+};
+
+THREE.Foliage.prototype.modelLoaded = function (level, meshIdx) {
+  var foliage = this;
+  return function (geometry, material) {
+    for (var i = 0; i < material.length; i++) {
+      var materialDoubleSided = material[i];
+      materialDoubleSided.side = THREE.DoubleSide;
+    }
+    // Register new loaded LOD Level
+    var mesh = new THREE.Mesh(
+      new THREE.BufferGeometry().fromGeometry(geometry),
+      new THREE.MeshFaceMaterial(material));
+
+    mesh.scale.x = 0.5;
+    mesh.scale.y = 0.5;
+    mesh.scale.z = 0.5;
+    mesh.castShadow = true;
+    if (foliage.lodTemplates[level] !== null) {
+      foliage.lodTemplates[level].addMesh(meshIdx, mesh);
+    } else {
+      foliage.lodTemplates[level] = new THREE.Foliage.LodTemplate(meshIdx, mesh, level);
+    }
+  };
+};
+
+/**
+ * All LOD level definitions with the loaded meshes
+ * @type {Array}
+ */
+
+THREE.Foliage.prototype.lodTemplates = [];
+
+/**
+ * Object which decribes a LOD level
+ * @param {number} meshIdx mesh index
+ * @param {THREE.Mesh} mesh THREE.Mesh
+ * @param {number} level LOD level index
+ * @param {string} mode String '3d' or '2d'
+ * @constructor
+ */
+THREE.Foliage.LodTemplate = function (meshIdx, mesh, level) {
+  this.level = level;
+  this.meshes = [];
+  this.addMesh(meshIdx, mesh);
+};
+
+/**
+ * All meshes of the LOD level
+ * @type {Array}
+ */
+THREE.Foliage.LodTemplate.prototype.meshes = [];
+
+/**
+ * Add another mesh to this LOD level
+ * @param {number} meshIdx mesh index
+ * @param {THREE.Mesh} mesh THREE.Mesh
+ */
+THREE.Foliage.LodTemplate.prototype.addMesh = function (meshIdx, mesh) {
+  this.meshes[meshIdx] = mesh;
+};
