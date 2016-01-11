@@ -1,6 +1,7 @@
 //global variables
 var billboardMap, billboardPositions;
 var foliageCall;
+var meshlist = new Map();
 
 //default constructor
 THREE.Foliage = function () {
@@ -17,7 +18,7 @@ THREE.Foliage = function (opts) {
     //set custom mapsize
     this.width = opts.width !== undefined ? opts.width : this.width;
     this.depth = opts.depth !== undefined ? opts.depth : this.depth;
-    this.positionAmount = this.width * this.depth / 2 /100;
+    this.positionAmount = this.width * this.depth / 2;
     //set scene for octree debugging
     this.scene = opts.scene;
 
@@ -44,7 +45,7 @@ THREE.Foliage.prototype = Object.create(THREE.Object3D.prototype);
 THREE.Foliage.prototype.constructor = THREE.Foliage;
 
 //LOD Range and amount Definition
-THREE.Foliage.prototype.levelDefinition = [20, 40, 80, 120];
+THREE.Foliage.prototype.levelDefinition = [10, 20, 50, 100];
 
 //area width
 THREE.Foliage.prototype.width = 100;
@@ -62,7 +63,7 @@ THREE.Foliage.prototype.loadingDone = function () { };
 THREE.Foliage.prototype.levelOfDetailChangedCallback = function (event) {
     if (event.level >= 4) {
         //LOD 4
-        var removable = foliageCall.getObjectByName(event.target.uuid);
+        var removable = meshlist.get(event.target.uuid);
         foliageCall.remove(removable);
         removable = null;
         billboardPositions[billboardMap.get(event.target.uuid)] = event.target.position.x;
@@ -70,7 +71,7 @@ THREE.Foliage.prototype.levelOfDetailChangedCallback = function (event) {
         billboardPositions[billboardMap.get(event.target.uuid) + 2] = event.target.position.z;
     } else if (event.level == 3) {
         //LOD 3
-        var removable = foliageCall.getObjectByName(event.target.uuid);
+        var removable = meshlist.get(event.target.uuid);
         foliageCall.remove(removable);
         removable = null;
         billboardPositions[billboardMap.get(event.target.uuid)] = undefined;
@@ -78,7 +79,7 @@ THREE.Foliage.prototype.levelOfDetailChangedCallback = function (event) {
         billboardPositions[billboardMap.get(event.target.uuid) + 2] = undefined;
     } else if (event.level == 2) {
         //LOD 2
-        var removable = foliageCall.getObjectByName(event.target.uuid);
+        var removable = meshlist.get(event.target.uuid);
         foliageCall.remove(removable);
         removable = null;
         billboardPositions[billboardMap.get(event.target.uuid)] = undefined;
@@ -86,7 +87,7 @@ THREE.Foliage.prototype.levelOfDetailChangedCallback = function (event) {
         billboardPositions[billboardMap.get(event.target.uuid) + 2] = undefined;
     } else if (event.level == 1) {
         //LOD 1
-        var removable = foliageCall.getObjectByName(event.target.uuid);
+        var removable = meshlist.get(event.target.uuid);
         foliageCall.remove(removable);
         removable = null;
         billboardPositions[billboardMap.get(event.target.uuid)] = undefined;
@@ -94,14 +95,14 @@ THREE.Foliage.prototype.levelOfDetailChangedCallback = function (event) {
         billboardPositions[billboardMap.get(event.target.uuid) + 2] = undefined;
     } else if (event.level == 0) {
         //LOD
-        var removable = foliageCall.getObjectByName(event.target.uuid);
+        var removable = meshlist.get(event.target.uuid);
         foliageCall.remove(removable);
         removable = null;
         var mesh = foliageCall.lodTemplates[event.level].meshes[0].clone();
-        mesh.name = event.target.uuid;
         mesh.position.x = event.target.position.x;
         mesh.position.y = event.target.position.y + 0.5;
         mesh.position.z = event.target.position.z;
+        meshlist.set(event.target.uuid, mesh);
         foliageCall.add(mesh);
         billboardPositions[billboardMap.get(event.target.uuid)] = undefined;
         billboardPositions[billboardMap.get(event.target.uuid) + 1] = undefined;
