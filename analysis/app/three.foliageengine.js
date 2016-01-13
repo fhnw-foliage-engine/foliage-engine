@@ -145,35 +145,35 @@ THREE.Foliage.prototype.models = [
   {
     level: 1,
     models: [
-      'app/models/grass/lod2/grass_0_single_grass_patch_lod2.js',
-      'app/models/grass/lod2/grass_01_single_grass_patch_lod2.js',
-      'app/models/grass/lod2/grass_03_single_grass_patch_lod2.js',
-      'app/models/grass/lod2/grass_04_single_grass_patch_lod2.js'
+      '../app/models/grass/lod2/grass_0_single_grass_patch_lod2.js',
+      '../app/models/grass/lod2/grass_01_single_grass_patch_lod2.js',
+      '../app/models/grass/lod2/grass_03_single_grass_patch_lod2.js',
+      '../app/models/grass/lod2/grass_04_single_grass_patch_lod2.js'
     ]
   },
   {
     level: 2,
     models: [
-      'app/models/grass/lod3/grass_0_single_grass_patch_lod3.js',
-      'app/models/grass/lod3/grass_01_single_grass_patch_lod3.js',
-      'app/models/grass/lod3/grass_03_single_grass_patch_lod3.js',
-      'app/models/grass/lod3/grass_04_single_grass_patch_lod3.js'
+      '../app/models/grass/lod3/grass_0_single_grass_patch_lod3.js',
+      '../app/models/grass/lod3/grass_01_single_grass_patch_lod3.js',
+      '../app/models/grass/lod3/grass_03_single_grass_patch_lod3.js',
+      '../app/models/grass/lod3/grass_04_single_grass_patch_lod3.js'
     ]
   },
   {
     level: 3,
     models: [
-      'app/models/grass/lod4/grass_0_single_grass_patch_lod4.js',
-      'app/models/grass/lod4/grass_01_single_grass_patch_lod4.js',
-      'app/models/grass/lod4/grass_03_single_grass_patch_lod4.js',
-      'app/models/grass/lod4/grass_04_single_grass_patch_lod4.js'
+      '../app/models/grass/lod4/grass_0_single_grass_patch_lod4.js',
+      '../app/models/grass/lod4/grass_01_single_grass_patch_lod4.js',
+      '../app/models/grass/lod4/grass_03_single_grass_patch_lod4.js',
+      '../app/models/grass/lod4/grass_04_single_grass_patch_lod4.js'
     ]
   },
   {
     level: 4,
     textures: function () {
       // create the textureDiffuse
-      var textureDiffuseUrl = 'public/textures/lod2d.png';
+      var textureDiffuseUrl = '../public/textures/lod2d.png';
       var textureDiffuse = THREE.ImageUtils.loadTexture(textureDiffuseUrl);
       textureDiffuse.wrapS = THREE.RepeatWrapping;
       textureDiffuse.wrapT = THREE.RepeatWrapping;
@@ -181,7 +181,7 @@ THREE.Foliage.prototype.models = [
       textureDiffuse.repeat.y = 1;
       textureDiffuse.anisotropy = 16;
       // create the textureNormal
-      var textureNormalUrl = 'public/textures/lod2d_normal.png';
+      var textureNormalUrl = '../public/textures/lod2d_normal.png';
       var textureNormal = THREE.ImageUtils.loadTexture(textureNormalUrl);
       textureNormal.wrapS = THREE.RepeatWrapping;
       textureNormal.wrapT = THREE.RepeatWrapping;
@@ -261,14 +261,14 @@ THREE.Foliage.prototype.createTerrain = function (width, height) {
     geometry.vertices[i].y = this.calculateHeight(x, z);
   }
   // create the textureDiffuse
-  var textureDiffuseUrl = 'public/textures/sand_clean_bumpy_01_b.png';
+  var textureDiffuseUrl = '../public/textures/sand_clean_bumpy_01_b.png';
   var textureDiffuse = THREE.ImageUtils.loadTexture(textureDiffuseUrl);
   textureDiffuse.wrapS = THREE.RepeatWrapping;
   textureDiffuse.wrapT = THREE.RepeatWrapping;
   textureDiffuse.repeat.x = width / 2;
   textureDiffuse.repeat.y = height / 2;
   // create the textureNormal
-  var textureNormalUrl = 'public/textures/sand_clean_bumpy_01_b_normal.png';
+  var textureNormalUrl = '../public/textures/sand_clean_bumpy_01_b_normal.png';
   var textureNormal = THREE.ImageUtils.loadTexture(textureNormalUrl);
   textureNormal.wrapS = THREE.RepeatWrapping;
   textureNormal.wrapT = THREE.RepeatWrapping;
@@ -537,7 +537,7 @@ THREE.Foliage.prototype.handle3DLevel = function (modelURL, modelIdx, level) {
 THREE.Foliage.prototype.handle2DLevel = function (texture, textureIdx, level) {
   //var object3D = new THREE.Mesh(new THREE.PlaneBufferGeometry(5, 5), texture);
   //Billboard implementation
-  var texture = THREE.ImageUtils.loadTexture( 'public/textures/grass.png' );
+  var texture = THREE.ImageUtils.loadTexture( '../public/textures/grass.png' );
   var vertexShader = [
     "varying vec2 vUv;",
     "void main() {",

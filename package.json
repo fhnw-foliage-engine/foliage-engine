@@ -1,36 +1,17 @@
 {
-  "name": "Strawberry",
-  "version": "15.3.7",
-  "description": "Strawberry - the collaborative shopping list.",
-  "main": "server.js",
-  "author": "Livio Bieri",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/livioso/strawberry"
-  },
+  "name": "FoliageEngine",
+  "version": "0.1.0",
+  "description": "FoliageEngine",
+  "author": "Livio Bieri & Raphael Brunner",
   "dependencies": {
     "gulp": "*"
   },
   "devDependencies": {
     "bower": "^1.5.2",
-    "eslint": "^1.4.1",
-    "gulp-jscs": "^3.0.1",
     "gulp-jshint": "^1.11.2",
-    "jscs": "^2.1.1",
-    "jshint-stylish": "^2.0.1",
-    "pre-commit": "^1.0.5",
     "run-sequence": "^1.1.4"
   },
   "scripts": {
-    "start": "node server.js",
-    "lint": "node_modules/gulp/bin/gulp.js jshint",
-    "jscs": "node_modules/gulp/bin/gulp.js jscs",
-    "test": "node_modules/karma/bin/karma start --single-run",
-    "tdd": "node_modules/karma/bin/karma start --auto-watch"
-  },
-  "pre-commit": [
-    "lint",
-    "jscs",
-    "test"
-  ]
+    "lint": "node_modules/gulp/bin/gulp.js jshint"
+  }
 }
