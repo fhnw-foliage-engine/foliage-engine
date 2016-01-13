@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>three.js - foliage demo</title>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background-color: #ffffff;
+            margin: 0;
+            overflow: hidden;
+            font-family: arial;
+        }
+
+        #blocker {
+
+            position: absolute;
+
+            width: 100%;
+            height: 100%;
+
+            background-color: rgba(0, 0, 0, 0.25);
+
+        }
+
+        #instructions {
+
+            width: 100%;
+            height: 100%;
+
+            display: -webkit-box;
+            display: -moz-box;
+            display: box;
+
+            -webkit-box-orient: horizontal;
+            -moz-box-orient: horizontal;
+            box-orient: horizontal;
+
+            -webkit-box-pack: center;
+            -moz-box-pack: center;
+            box-pack: center;
+
+            -webkit-box-align: center;
+            -moz-box-align: center;
+            box-align: center;
+
+            color: #ffffff;
+            text-align: center;
+
+            cursor: pointer;
+
+            z-index: 1;
+        }
+
+        #loading {
+
+            width: 100%;
+            height: 100%;
+
+            display: -webkit-box;
+            display: -moz-box;
+            display: box;
+
+            -webkit-box-orient: horizontal;
+            -moz-box-orient: horizontal;
+            box-orient: horizontal;
+
+            -webkit-box-pack: center;
+            -moz-box-pack: center;
+            box-pack: center;
+
+            -webkit-box-align: center;
+            -moz-box-align: center;
+            box-align: center;
+
+            color: #ffffff;
+            text-align: center;
+
+            cursor: wait;
+            background-color: rgba(0, 0, 0, 0.9);
+
+            z-index: 99;
+
+        }
+
+    </style>
+</head>
+<body>
+<script src="../../bower_components/threejs/build/three.min.js"></script>
+<script src="../../bower_components/PointerLockControls/index.js"></script>
+<script src="../../bower_components/stats.js/build/stats.min.js"></script>
+<script src="../../bower_components/threex.rendererstats/threex.rendererstats.js"></script>
+<script src="app/three.foliageengine.js"></script>
+
+<div id="blocker">
+
+    <div id="loading">
+        <span style="font-size:40px">Loading foliage ...</span>
+    </div>
+
+    <div id="instructions">
+        <span style="font-size:40px">Click to play</span>
+        <br/>
+        (W, A, S, D = Move, MOUSE = Look around)
+    </div>
+
+</div>
+
+<script>
+
+    var camera, scene, renderer;
+    var geometry, material, mesh;
+    var controls, clock = new THREE.Clock();
+
+    var stats = new Stats();
+    var rendererStats = new THREEx.RendererStats();
+
+    var blocker = document.getElementById('blocker');
+    var instructions = document.getElementById('instructions');
+    var loading = document.getElementById('loading');
+
+    var foliage, skybox, light;
+
+    const worldWidth = 50;
+    const worldDepth = 50;
+
+
+    // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
+
+    var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+
+    if (havePointerLock) {
+
+        var element = document.body;
+
+        var pointerlockchange = function (event) {
+
+            if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
+
+                controlsEnabled = true;
+                controls.enabled = true;
+
+                blocker.style.display = 'none';
+
+            } else {
+
+                controls.enabled = false;
+
+                blocker.style.display = '-webkit-box';
+                blocker.style.display = '-moz-box';
+                blocker.style.display = 'box';
+
+                instructions.style.display = '';
+
+            }
+
+        }
+
+        var pointerlockerror = function (event) {
+
+            instructions.style.display = '';
+
+        }
+
+        // Hook pointer lock state change events
+        document.addEventListener('pointerlockchange', pointerlockchange, false);
+        document.addEventListener('mozpointerlockchange', pointerlockchange, false);
+        document.addEventListener('webkitpointerlockchange', pointerlockchange, false);
+
+        document.addEventListener('pointerlockerror', pointerlockerror, false);
+        document.addEventListener('mozpointerlockerror', pointerlockerror, false);
+        document.addEventListener('webkitpointerlockerror', pointerlockerror, false);
+
+        instructions.addEventListener('click', function (event) {
+
+            instructions.style.display = 'none';
+
+            // Ask the browser to lock the pointer
+            element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+
+            if (/Firefox/i.test(navigator.userAgent)) {
+
+                var fullscreenchange = function (event) {
+
+                    if (document.fullscreenElement === element || document.mozFullscreenElement === element || document.mozFullScreenElement === element) {
+
+                        document.removeEventListener('fullscreenchange', fullscreenchange);
+                        document.removeEventListener('mozfullscreenchange', fullscreenchange);
+
+                        element.requestPointerLock();
+                    }
+
+                }
+
+                document.addEventListener('fullscreenchange', fullscreenchange, false);
+                document.addEventListener('mozfullscreenchange', fullscreenchange, false);
+
+                element.requestFullscreen = element.requestFullscreen || element.mozRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen;
+
+                element.requestFullscreen();
+
+            } else {
+
+                element.requestPointerLock();
+
+            }
+
+        }, false);
+
+    } else {
+
+        instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
+
+    }
+
+    init();
+    animate();
+
+    var controlsEnabled = false;
+
+    var moveForward = false;
+    var moveBackward = false;
+    var moveLeft = false;
+    var moveRight = false;
+
+    var prevTime = performance.now();
+    var velocity = new THREE.Vector3();
+
+    function init() {
+
+        //Stats
+        stats.setMode(0); //0 = fps, 1 = ms
+
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.right = '0px';
+        stats.domElement.style.top = '0px';
+
+        rendererStats.domElement.style.position = 'absolute';
+        rendererStats.domElement.style.left = '0px';
+        rendererStats.domElement.style.bottom = '0px';
+        document.body.appendChild(rendererStats.domElement);
+
+        document.body.appendChild(stats.domElement);
+
+        // camera
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+
+        //scene & pointlocker control
+        scene = new THREE.Scene();
+        scene.fog = new THREE.Fog(0xffffff, 0, 750);
+
+        var ambientLight = new THREE.AmbientLight(0x999999);
+        ambientLight.position.set(0, 0, 0);
+        scene.add(ambientLight);
+
+        light = new THREE.DirectionalLight(0xaaaaaa);
+        light.position.set(300, 250, 50);
+
+        scene.add(light);
+
+        controls = new THREE.PointerLockControls(camera);
+        scene.add(controls.getObject());
+
+        var onKeyDown = function (event) {
+
+            switch (event.keyCode) {
+
+                case 38: // up
+                case 87: // w
+                    moveForward = true;
+                    break;
+
+                case 37: // left
+                case 65: // a
+                    moveLeft = true;
+                    break;
+
+                case 40: // down
+                case 83: // s
+                    moveBackward = true;
+                    break;
+
+                case 39: // right
+                case 68: // d
+                    moveRight = true;
+                    break;
+
+            }
+
+        };
+
+        var onKeyUp = function (event) {
+
+            switch (event.keyCode) {
+
+                case 38: // up
+                case 87: // w
+                    moveForward = false;
+                    break;
+
+                case 37: // left
+                case 65: // a
+                    moveLeft = false;
+                    break;
+
+                case 40: // down
+                case 83: // s
+                    moveBackward = false;
+                    break;
+
+                case 39: // right
+                case 68: // d
+                    moveRight = false;
+                    break;
+
+            }
+
+        };
+
+        document.addEventListener('keydown', onKeyDown, false);
+        document.addEventListener('keyup', onKeyUp, false);
+
+        //skybox
+
+        var imagePrefix = "public/textures/skybox/sky-";
+        var directions = ["right", "left", "up", "down", "front", "back"];
+        var imageSuffix = ".png";
+
+        var materialArray = [];
+        for (var i = 0; i < 6; i++) {
+            var texture = THREE.ImageUtils.loadTexture(imagePrefix + directions[i] + imageSuffix);
+
+            texture.minFilter = THREE.NearestFilter;
+
+            materialArray.push(new THREE.MeshBasicMaterial({
+                map: texture,
+                side: THREE.BackSide
+            }));
+        }
+
+        var skyGeometry = new THREE.BoxGeometry(worldWidth * 10, Math.max(worldDepth, worldWidth) * 10, worldDepth * 10);
+        var skyMaterial = new THREE.MeshFaceMaterial(materialArray);
+        skybox = new THREE.Mesh(skyGeometry, skyMaterial);
+        skybox.matrixAutoUpdate = false;
+        scene.add(skybox);
+
+        // foliage
+
+        foliage = new THREE.Foliage({
+            width: worldWidth,
+            depth: worldDepth,
+            callback: function () {
+                loading.style.display = "none";
+                instructions.style.display = '-webkit-box';
+                instructions.style.display = '-moz-box';
+                instructions.style.display = 'box';
+            }
+        });
+        foliage.matrixAutoUpdate = false;
+        scene.add(foliage);
+
+        //
+
+        //renderer = new THREE.WebGLRenderer({antialias: true});
+		renderer = new THREE.WebGLRenderer({antialias: true});
+        /*
+         {
+         antialiasing: true,
+         precision: "lowp"
+         }
+         */
+
+        renderer.setClearColor(0xffffff);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        //renderer.setFaceCulling( "front_and_back", "ccw" );
+        document.body.appendChild(renderer.domElement);
+        window.addEventListener('resize', onWindowResize, false);
+
+    }
+
+    function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+    }
+
+    function animate() {
+
+        requestAnimationFrame(animate);
+
+        var time = performance.now();
+        var delta = ( time - prevTime ) / 1000;
+
+        if (controlsEnabled) {
+            light.position.y = 200 + (Math.sin(time / 5000) * 250);
+
+            var speed = 0.01;
+
+            velocity.x -= velocity.x * 10 * speed;
+            velocity.z -= velocity.z * 10 * speed;
+
+            if (moveForward) velocity.z -= speed;
+            if (moveBackward) velocity.z += speed;
+
+            if (moveLeft) velocity.x -= speed;
+            if (moveRight) velocity.x += speed;
+
+            controls.getObject().translateX(velocity.x);
+            controls.getObject().translateZ(velocity.z);
+            controls.getObject().position.y = foliage.calculateHeight(controls.getObject().position.x, controls.getObject().position.z) + 1.8;
+
+            const padding = 2.5;
+
+            if (controls.getObject().position.x < skybox.position.x - (worldWidth / 2) + padding) {
+                controls.getObject().position.x = skybox.position.x - (worldWidth / 2) + padding;
+            } else if (controls.getObject().position.x > skybox.position.x + (worldWidth / 2) - padding) {
+                controls.getObject().position.x = skybox.position.x + (worldWidth / 2) - padding;
+            }
+
+            if (controls.getObject().position.z < skybox.position.z - (worldDepth / 2) + padding) {
+                controls.getObject().position.z = skybox.position.z - (worldDepth / 2) + padding;
+            } else if (controls.getObject().position.z > skybox.position.z + (worldDepth / 2) - padding) {
+                controls.getObject().position.z = skybox.position.z + (worldDepth / 2) - padding;
+            }
+			
+            foliage.update(camera, delta);
+        } else {
+            controls.getObject().position.y = 20;
+        }
+
+        renderer.render(scene, camera);
+
+        stats.update();
+        rendererStats.update(renderer);
+
+        prevTime = time;
+
+    }
+
+</script>
+</body>
+</html>
+

@@ -1,0 +1,27 @@
+{
+  "name": "foliage-engine",
+  "version": "1.0.0",
+  "homepage": "https://github.com/livioso/foliage-engine",
+  "authors": [
+    "Livio Bieri <livio.bieri@students.fhnw.ch>",
+    "Raphael Brunner <raphael.brunner3@students.fhnw.ch>"
+  ],
+  "moduleType": [
+    "es6",
+    "node"
+  ],
+  "private": true,
+  "dependencies": {
+    "threejs": "*",
+    "threex.rendererstats": "https://github.com/jeromeetienne/threex.rendererstats/archive/master.zip",
+    "PointerLockControls": "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/js/controls/PointerLockControls.js",
+    "stats.js": "https://github.com/mrdoob/stats.js/archive/master.zip"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
